@@ -66,7 +66,7 @@ export class UI {
      */
     private onDocumentKeyDown(event: KeyboardEvent, ui: UI): void {
 
-      const key = ui.keymap[event.key] - 1;
+      const key = ui.keymap[event.key];
       ui.setKeyState(key, true);
     }
 
@@ -76,7 +76,7 @@ export class UI {
      */
     private onDocumentKeyUp(event: KeyboardEvent, ui: UI): void {
 
-      const key = ui.keymap[event.key] - 1;
+      const key = ui.keymap[event.key];
       ui.setKeyState(key, false);
     }
 
@@ -147,14 +147,14 @@ export class UI {
             const button = document.createElement('button')!;
             
             button.innerText = (key).toString(16).toUpperCase();
-            button.setAttribute('key', (key-1).toString());
+            button.setAttribute('key', key.toString());
         
             button.addEventListener('mousedown', () => {
-              this.setKeyState(key - 1, true);
+              this.setKeyState(key, true);
             });
         
             button.addEventListener('mouseup', () => {
-              this.setKeyState(key - 1, false);
+              this.setKeyState(key, false);
             });
         
             td.appendChild(button);
