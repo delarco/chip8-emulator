@@ -14,6 +14,7 @@ export class Chip8 {
     NUMBER_OF_KEYS = 16;
     SCREEN_WIDTH = 64;
     SCREEN_HEIGHT = 32;
+    STEPS_PER_CYCLE = 10;
 
     /**
      * Instruction set
@@ -85,6 +86,11 @@ export class Chip8 {
     cycleCounter: number;
 
     /**
+     * Step counter (used for debug)
+     */
+    stepCounter: number;
+
+    /**
      * Known "quirks"
      */
     quirks: {
@@ -92,6 +98,21 @@ export class Chip8 {
         shift: boolean
     };
     
+    /**
+     * CPU run timeout handle
+     */
+    timeoutHandle: NodeJS.Timeout;
+
+    /**
+     * window.requestAnimationFrame handle
+     */
+    requestAnimationFrameHandle: number;
+
+    /**
+     * Redraw event emitter 
+     */
+    public onRedraw?: () => void;
+
     constructor() {
 
         this.IS = new Chip8IS(this);
@@ -116,6 +137,7 @@ export class Chip8 {
         this.cycleCounter = 0;
         this.quirks = { shift: false, loadStore: false };
         this.cycleCounter = 0;
+        this.stepCounter = 0;
 
         this.loadFontSet();
     }
@@ -146,4 +168,161 @@ export class Chip8 {
         this.loadData(buffer, this.PROGRAM_START_ADDRESS);
     }
 
+    /**
+     * Runs CPU.
+     */
+    public run(): void {
+
+        const tick = () => {
+
+            this.timeoutHandle = setTimeout(() => {
+                this.requestAnimationFrameHandle = window.requestAnimationFrame(tick);
+                this.cycle();
+            }, 1000 / this.FREQUENCY);
+
+        };
+
+        tick();
+    }
+
+    /**
+     * Stops CPU.
+     */
+    public stop(): void {
+
+        if(this.timeoutHandle) {
+
+            window.clearTimeout(this.timeoutHandle);
+        }
+
+        if(this.requestAnimationFrameHandle) {
+            window.cancelAnimationFrame(this.requestAnimationFrameHandle);
+        }
+    }
+
+    /**
+     * Cycle
+     */
+    private cycle(): void {
+
+        this.cycleCounter++;
+        
+        for(let i = 0; i < this.STEPS_PER_CYCLE; i++) {
+            this.step();
+        }
+        this.updateTimers();
+
+        this.playSound();
+    }
+
+    private step(): void {
+
+        this.stepCounter++;
+
+        const opcode = this.fetch();
+
+        this.execute(opcode);
+
+        if(this.redraw && this.onRedraw) {
+            
+            this.onRedraw();
+            this.redraw = false;
+        }
+    }
+
+    /**
+     * Fetchs next opcode
+     * @returns next opcode (2 bytes)
+     */
+    private fetch(): number {
+
+        return this.memory[this.pc] << 8 | this.memory[this.pc + 1];
+    }
+
+    /**
+     * Fetches X symbol
+     * @param opcode 
+     * @returns X symbol (0x0X00)
+     */
+    private fetchX(opcode: number): number {
+
+        return (opcode & 0x0F00) >> 8;
+    }
+
+    /**
+     * Fetches Y symbol
+     * @param opcode 
+     * @returns Y symbol (0x00Y0)
+     */
+    private fetchY(opcode: number): number {
+
+        return (opcode & 0x00F0) >> 4;
+    }
+
+    /**
+     * Fetches N symbol
+     * @param opcode 
+     * @returns N symbol (0x000N)
+     */
+    private fetchN(opcode: number): number {
+
+        return opcode & 0x000F;
+    }
+
+    /**
+     * Fetches NN symbol
+     * @param opcode 
+     * @returns NN symbol (0x00NN)
+     */
+    private fetchNN(opcode: number): number {
+
+        return opcode & 0x00FF;;
+    }
+
+    /**
+     * Fetches NNN symbol
+     * @param opcode 
+     * @returns N symbol (0x0NNN)
+     */
+    private fetchNNN(opcode: number): number {
+
+        return opcode & 0x0FFF;;
+    }
+
+    /**
+     * Execute opcode
+     * @param opcode 
+     * @returns 
+     */
+    private execute(opcode: number): void {
+        
+        switch(opcode & 0xF000) {
+            // TODO: check opcode and execute instruction
+            default: return;
+        }
+
+        throw 'Unknown opcode: 0x' + opcode.toString(16);
+    }
+
+    /**
+     * Updates CPU timers.
+     */
+    private updateTimers(): void {
+
+        if(this.delayTimer > 0)
+            this.delayTimer--;
+
+        if(this.soundTimer > 0)        
+            this.soundTimer--;
+    }
+
+    /**
+     * Plays sound if needed
+     */
+    private playSound(): void {
+
+        if(this.soundTimer > 0) {
+            // TODO: implement sound
+        }
+    }
 }

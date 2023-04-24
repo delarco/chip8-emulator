@@ -1,5 +1,6 @@
 import { Chip8 } from "./chip8/chip8";
 import { keymap } from "./keymap";
+import { Renderer } from "./renderer";
 import { UI } from "./UI";
 
 export class App {
@@ -8,6 +9,7 @@ export class App {
 
     ui = new UI(keymap);
     chip8 = new Chip8();
+    renderer = new Renderer();
 
     constructor() {
         
@@ -18,6 +20,10 @@ export class App {
         this.ui.initializeKeyboard();
 
         this.ui.onKeyStateChange = this.onKeyStateChange;
+
+        this.chip8.onRedraw = this.onScreenRedraw;
+
+        this.renderer.initialize(this.chip8.SCREEN_WIDTH, this.chip8.SCREEN_HEIGHT, this.PIXEL_SIZE);
     }
 
     /**
@@ -28,5 +34,13 @@ export class App {
     private onKeyStateChange(key: number, pressed: boolean): void {
 
         this.chip8.keys[key] = pressed ? 1 : 0;
+    }
+
+    /**
+     * CPU event for screen redraw
+     */
+    private onScreenRedraw(): void {
+
+        this.renderer.draw(this.chip8.screen);
     }
 }
