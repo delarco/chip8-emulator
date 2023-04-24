@@ -1,12 +1,8 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  font-family: 'Press Start 2P', monospace;
+  color-scheme: light;
+  background-color: #FCFCFC;
+  color: rgb(100, 100, 100);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -14,84 +10,233 @@
   -webkit-text-size-adjust: 100%;
 }
 
+body{
+  width: 100%;
+  margin: 0 auto;
+  
+}
+
 a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: rgb(100, 100, 100);
+  text-decoration: none;
+  transition: all 0.4s
 }
+
 a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  color: black;
 }
 
 #app {
-  max-width: 1280px;
+  min-width: 720px;
+  min-height: 700px;
   margin: 0 auto;
-  padding: 2rem;
+  display: grid;
+  grid-template-rows: 48px 680px 32px;
+  grid-template-areas: "header" 
+                       "console" 
+                       "footer";
+}
+
+#app.debug {
+  grid-template-columns: 65% 35%;
+  grid-template-areas:"header header"
+                      "console debugger"
+                      "footer footer";
+}
+
+#app.debug aside {
+  display: unset;
+}
+
+header {
+  grid-area: header;
+  background-color: antiquewhite;
+  padding: 8px;
+  line-height: 32px;
+  border-bottom: 1px solid lightgray;
+}
+
+section {
+   grid-area: console;
+   padding: 12px;
+}
+
+aside {
+   grid-area: debugger;
+   background-color: #FEE;
+   display: none;
+   color: black;
+   padding: 12px;
+}
+
+footer {
+   grid-area: footer;
+   text-align: center;
+   padding: 12px;
+   color: rgb(140, 140, 140);
+   font-size: .5rem;
+   border-top: 1px solid lightgray;
+}
+
+#chip-icon {
+  float: left;
+  margin-right: 16px;
+}
+
+#links {
+  list-style: none;
+  float: right;
+  margin: 0;
+  padding: 0;
+}
+
+#links li {
+  float: left;
+  margin: 0 12px;
+}
+
+aside h2 {
+  font-size: .8rem;
+  line-height: 32px;
+  margin: 0 0 0 32px;
+}
+
+aside img {
+  float: left;
+}
+
+aside hr {
+  clear: left;
+  margin-top: 6px;
+}
+
+#console {
+  margin: 0 auto;
+  width: 720px;
+}
+
+#screen {
+  text-align: center;
+  padding: 6px;
+}
+
+canvas {
+  box-shadow: 0px 0px 3px 3px rgba(0,0,0,0.75);
+}
+
+#panel {
+  width: 640px;
+  margin: 0 auto; 
+  box-shadow: 0px 1px 3px 3px rgba(165,42,42,1);
+  background-color:burlywood;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#speakers {
+  width: 60px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0 12px;
+}
+
+#speakers li {
+  height: 10px;
+  background-color: black;
+  border-radius: 8px;
+  margin-top: 18px;
+  box-shadow: 0px 0px 4px 4px rgba(0,0,0,0.75);
+}
+
+#speakers.beep li {
+  box-shadow: 0px 0px 8px 8px rgba(0,0,0,0.75);
+}
+
+#leds {
+  padding: 10px 8px 0 8px;
+  width: 120px;
+
+  display: grid;
+  grid-template-columns: 90% 10%;
+}
+
+div.led {
+  background-color: rgb(255, 0, 0, .2);
+  border: 1px solid rgb(200, 0, 0, .1);
+  width: 12px;
+  height: 12px;
+  border-radius: 7px;
+}
+
+#power-led {
+  background-color: red;
+  box-shadow: 0px 0px 4px 4px rgba(255,0,0,1);
+}
+
+#options {
+  width: 300px;
+  padding: 8px;
+}
+
+#options button, #options select {
+  background-color: antiquewhite;
+  border: 2px solid burlywood;
+  border-radius: 4px;
+  transition: all .2s;
+}
+
+#options button:hover {
+  background-color:brown;
+  color: antiquewhite;
+}
+
+#resetButton, #debuggerButton {
+  height: 32px;
+}
+
+#romSelect, #romUpload {
+  width: 100%;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #3178c6aa);
+#keyboard {
+  border-spacing: 0;
 }
 
-.card {
-  padding: 2em;
+#keyboard td, #keyboard tr {
+  margin:0;
+  padding: 0;
 }
 
-.read-the-docs {
-  color: #888;
+#keyboard button {
+  background-color: antiquewhite;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 2px solid burlywood;
+  border-radius: 4px;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+#keyboard button.active {
+  background-color:brown;
+  color: antiquewhite;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+#rom-info {
+  margin: 0 auto;
+  width: 640px;
+  font-size: .7rem;
+  margin-top: 24px;
+}
+
+#rom-info .label {
+  color: rgb(80, 80, 80);
+}
+
+#rom-info .info {
+  color: rgb(120, 120, 120);
 }

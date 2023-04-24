@@ -2,12 +2,78 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg" href="/chip.svg" />
+    <link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CHIP-8 Emulator</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <header>
+        <img id="chip-icon" src="chip.svg" alt="CHIP icon" />
+        <ul id="links">
+          <li>
+            <a href="https://github.com/delarco/chip8-emulator">source</a>
+          </li>
+          <li>
+            <a href="#">docs</a>
+          </li>
+          <li>
+            <a href="#">tests</a>
+          </li>
+        </ul>
+        CHIP-8 Emulator
+      </header>
+      <section>
+        <div id="console">
+          <div id="screen">
+            <canvas></canvas>
+          </div>
+          <div id="panel">
+            <ul id="speakers">
+              <li></li>
+              <li></li>
+              <li></li>
+            </ul>
+            <div id="leds">
+              <div>POWER</div>
+              <div id="power-led" class="led"></div>
+              <div>TAPE</div>
+              <div id="tape-led" class="led"></div>
+              <div>RUN</div>
+              <div id="run-led" class="led"></div>
+            </div>
+            <div id="options">
+              <button id="resetButton">RESET</button>
+              <button id="debuggerButton">DEBUGGER</button>
+              <hr />
+              <select id="romSelect">
+                <option>SELECT A ROM...</option>
+              </select>
+              <button id="romUpload">UPLOAD CUSTOM ROM</button>
+            </div>
+            <table id="keyboard"></table>
+          </div>
+        </div>
+        <div id="rom-info">
+          <span class="label">TITLE:</span> <span class="info">Rom Title</span>
+          <hr />
+          <span class="label">DESCRIPTION:</span>
+          <p class="info">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </p>
+        </div>
+      </section>
+      <aside>
+        <img src="bug.svg" alt="Bug icon" />
+        <h2>DEBUGGER</h2>
+        <hr />
+        <div id="#debugger"></div>
+      </aside>
+      <footer>
+        Copyright © 2023 by delarco. All Rights Reserved.
+      </footer>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
