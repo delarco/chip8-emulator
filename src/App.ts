@@ -1,3 +1,4 @@
+import { Audio } from "./audio";
 import { Chip8 } from "./chip8/chip8";
 import { keymap } from "./keymap";
 import { Renderer } from "./renderer";
@@ -83,6 +84,7 @@ export class App {
      */
     private onPlaySound(): void {
 
+        this.audio.play();
         this.ui.setBuzzers(true);
     }
 
@@ -91,6 +93,7 @@ export class App {
      */
     private onStopSound(): void {
 
+        this.audio.stop();
         this.ui.setBuzzers(false);
     }
 
