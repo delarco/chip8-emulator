@@ -10,6 +10,8 @@ export class UI {
     fileInput = document.querySelector<HTMLInputElement>("#fileInput")!;
     romSelect = document.querySelector<HTMLSelectElement>("#romSelect")!;
     romUpload = document.querySelector<HTMLSelectElement>("#romUpload")!;
+    romTitle = document.querySelector<HTMLSpanElement>("#rom-title")!;
+    romDescription = document.querySelector<HTMLSpanElement>("#rom-description")!;
 
     keymap: {[key: string]: number};
 
@@ -181,5 +183,15 @@ export class UI {
 
       if(this.onKeyStateChange) this.onKeyStateChange(key, state);
     }
-    
+
+    /**
+     * Edit rom info
+     * @param title 
+     * @param desription 
+     */
+    public setRomInfo(title: string, description: string): void {
+
+      this.romTitle.innerText = title;
+      this.romDescription.innerText = description;
+    }
 }

@@ -11,6 +11,8 @@ export class App {
     chip8 = new Chip8();
     renderer = new Renderer();
 
+    lastRomData: Uint8Array;
+
     constructor() {
         
         this.ui.bindEvents();
@@ -48,6 +50,12 @@ export class App {
         app.chip8.stop();
         app.chip8.initialize();
         app.renderer.clear();
+
+        if(app.lastRomData) {
+
+            app.chip8.loadROM(app.lastRomData);
+            app.chip8.run();
+        }
     }
 
     /**
@@ -64,6 +72,10 @@ export class App {
      * @param romData 
      */
     private onRomUploaded(filename: string, romData: Uint8Array): void {
+
+        this.lastRomData = romData;
+
+        this.ui.setRomInfo(filename, '');
 
         this.chip8.stop();
         this.chip8.initialize();
