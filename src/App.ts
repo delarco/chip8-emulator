@@ -19,7 +19,9 @@ export class App {
 
         this.ui.initializeKeyboard();
 
-        this.ui.onKeyStateChange = this.onKeyStateChange;
+        this.ui.onKeyStateChange = (key: number, pressed: boolean) => this.onKeyStateChange(key, pressed);
+
+        this.ui.onReset = () => this.onReset();
 
         this.chip8.onRedraw = this.onScreenRedraw;
 
@@ -34,6 +36,15 @@ export class App {
     private onKeyStateChange(key: number, pressed: boolean): void {
 
         this.chip8.keys[key] = pressed ? 1 : 0;
+    }
+
+    /**
+     * Reset CPU
+     */
+    public onReset(): void {
+
+        this.chip8.stop();
+        this.chip8.initialize();
     }
 
     /**

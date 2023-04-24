@@ -210,11 +210,15 @@ export class Chip8 {
         for(let i = 0; i < this.STEPS_PER_CYCLE; i++) {
             this.step();
         }
+        
         this.updateTimers();
 
         this.playSound();
     }
 
+    /**
+     * Step
+     */
     private step(): void {
 
         this.stepCounter++;
@@ -296,11 +300,82 @@ export class Chip8 {
      */
     private execute(opcode: number): void {
         
+        const x = this.fetchX(opcode);
+        const y = this.fetchY(opcode);
+        const n   = this.fetchN(opcode);
+        const nn  = this.fetchNN(opcode);
+        const nnn = this.fetchNNN(opcode);
+        
         switch(opcode & 0xF000) {
-            // TODO: check opcode and execute instruction
-            default: return;
+
+            case 0x0000:
+                switch (opcode) {
+                    case 0x00E0: return this.IS.CLS();
+                    case 0x00EE: return this.IS.RET();
+                    default:     return this.IS.SYS();
+                }
+
+            case 0x1000: return this.IS.JP_nnn(nnn);
+
+            case 0x2000: return this.IS.CALL_nnn(nnn);
+
+            case 0x3000: return this.IS.SE_Vx_nn(x, nn);
+
+            case 0x4000: return this.IS.SNE_Vx_nn(x, nn);
+
+            case 0x5000: return this.IS.SE_Vx_Vy(x, y);
+
+            case 0x6000: return this.IS.LD_Vx_nn(x, nn);
+
+            case 0x7000: return this.IS.ADD_Vx_nn(x, nn);
+
+            case 0x8000:
+                switch (opcode & 0x000F) {
+                    case 0x0000: return this.IS.LD_Vx_Vy(x, y);
+                    case 0x0001: return this.IS.OR_Vx_Vy(x, y);
+                    case 0x0002: return this.IS.AND_Vx_Vy(x, y);
+                    case 0x0003: return this.IS.XOR_Vx_Vy(x, y);
+                    case 0x0004: return this.IS.ADD_Vx_Vy(x, y);
+                    case 0x0005: return this.IS.SUB_Vx_Vy(x, y);
+                    case 0x0006: return this.IS.SHR_Vx_Vy(x, y);
+                    case 0x0007: return this.IS.SUBN_Vx_Vy(x, y);
+                    case 0x000E: return this.IS.SHL_Vx_Vy(x,y);
+                }
+                break;
+
+            case 0x9000: return this.IS.SNE_Vx_Vy(x, y);
+
+            case 0xA000: return this.IS.LD_I_nnn(nnn);
+
+            case 0xB000: return this.IS.JP_V0_nnn(nnn);
+
+            case 0xC000: return this.IS.RND_Vx_nn(x, nn);
+
+            case 0xD000: return this.IS.DRW_Vx_Vy_n(x, y, n);
+
+            case 0xE000:
+                switch (opcode & 0x00FF) {
+                    case 0x009E: return this.IS.SKP_Vx(x);
+                    case 0x00A1: return this.IS.SKNP_Vx(x);
+                }
+                break;
+
+            case 0xF000:
+                switch (opcode & 0x00FF) {
+                    case 0x0007: return this.IS.LD_Vx_DT(x);
+                    case 0x000A: return this.IS.LD_Vx_K(x);
+                    case 0x0015: return this.IS.LD_DT_Vx(x);
+                    case 0x0018: return this.IS.LD_ST_Vx(x);
+                    case 0x001E: return this.IS.ADD_I_Vx(x);
+                    case 0x0029: return this.IS.LD_F_Vx(x);
+                    case 0x0033: return this.IS.LD_B_Vx(x);
+                    case 0x0055: return this.IS.LD_I_Vx(x);
+                    case 0x0065: return this.IS.LD_Vx_I(x);
+                }
+                break;
         }
 
+        this.stop();
         throw 'Unknown opcode: 0x' + opcode.toString(16);
     }
 

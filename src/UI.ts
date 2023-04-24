@@ -11,6 +11,7 @@ export class UI {
     keymap: {[key: string]: number};
 
     public onKeyStateChange?: (key: number, pressed: boolean) => void;
+    public onReset?: () => void;
 
     constructor(keymap: {[key: string]: number}) {
 
@@ -22,11 +23,22 @@ export class UI {
      */
     public bindEvents(): void {
 
-        this.debuggerButton.addEventListener("click", () => this.onDebuggerClick(this.app));
+      this.resetButton.addEventListener("click", () => this.onResetClick(this));
 
-        document.addEventListener("keydown", (event: KeyboardEvent) => this.onDocumentKeyDown(event, this));
+      this.debuggerButton.addEventListener("click", () => this.onDebuggerClick(this.app));
+
+      document.addEventListener("keydown", (event: KeyboardEvent) => this.onDocumentKeyDown(event, this));
         
-        document.addEventListener("keyup", (event: KeyboardEvent) => this.onDocumentKeyUp(event, this));
+      document.addEventListener("keyup", (event: KeyboardEvent) => this.onDocumentKeyUp(event, this));
+    }
+
+    /**
+     * Reset button click event
+     * @param ui 
+     */
+    public onResetClick(ui: UI): void {
+
+      if(ui.onReset) ui.onReset();
     }
 
     /**
