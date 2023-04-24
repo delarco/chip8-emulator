@@ -113,6 +113,19 @@ export class Chip8 {
      */
     public onRedraw?: () => void;
 
+    /**
+     * Play sound event emitter
+     */
+    public onPlaySound?: () => void;
+
+    /**
+     * Stop sound event emitter
+     */
+    public onStopSound?: () => void;
+
+    /**
+     * CHIP-8 CPU
+     */
     constructor() {
 
         this.IS = new Chip8IS(this);
@@ -397,7 +410,12 @@ export class Chip8 {
     private playSound(): void {
 
         if(this.soundTimer > 0) {
-            // TODO: implement sound
+
+            if(this.onPlaySound) this.onPlaySound();
+        }
+        else {
+
+            if(this.onStopSound) this.onStopSound();
         }
     }
 }

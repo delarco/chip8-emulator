@@ -135,7 +135,7 @@ canvas {
   justify-content: space-between;
 }
 
-#speakers {
+#buzzers {
   width: 60px;
   list-style: none;
   display: flex;
@@ -144,15 +144,16 @@ canvas {
   padding: 0 12px;
 }
 
-#speakers li {
+#buzzers li {
   height: 10px;
   background-color: black;
   border-radius: 8px;
   margin-top: 18px;
   box-shadow: 0px 0px 4px 4px rgba(0,0,0,0.75);
+  transition: all .1s;
 }
 
-#speakers.beep li {
+#buzzers.beep li {
   box-shadow: 0px 0px 8px 8px rgba(0,0,0,0.75);
 }
 

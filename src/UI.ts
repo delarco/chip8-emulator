@@ -12,6 +12,7 @@ export class UI {
     romUpload = document.querySelector<HTMLSelectElement>("#romUpload")!;
     romTitle = document.querySelector<HTMLSpanElement>("#rom-title")!;
     romDescription = document.querySelector<HTMLSpanElement>("#rom-description")!;
+    buzzers = document.querySelector<HTMLUListElement>("#buzzers")!;
 
     keymap: {[key: string]: number};
 
@@ -220,5 +221,14 @@ export class UI {
     public setRunLed(on: boolean): void {
 
       this.runLed.className = `led ${on ? 'active' : ''}`;
+    }
+
+    /**
+     * Set buzzers state
+     * @param on 
+     */
+    public setBuzzers(on: boolean): void {
+
+      this.buzzers.className = `buzzers ${on ? 'beep' : ''}`;
     }
 }
