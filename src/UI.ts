@@ -8,12 +8,25 @@ export class UI {
     runLed = document.querySelector("#run-led")!;
     canvas = document.querySelector("canvas")!;
 
+    keymap: {[key: string]: number};
+
+    public onKeyStateChange?: (key: number, pressed: boolean) => void;
+
+    constructor(keymap: {[key: string]: number}) {
+
+      this.keymap = keymap;
+    }
+
     /**
      * Bind events to DOM elements
      */
     public bindEvents(): void {
 
         this.debuggerButton.addEventListener("click", () => this.onDebuggerClick(this.app));
+
+        document.addEventListener("keydown", (event: KeyboardEvent) => this.onDocumentKeyDown(event, this));
+        
+        document.addEventListener("keyup", (event: KeyboardEvent) => this.onDocumentKeyUp(event, this));
     }
 
     /**
@@ -23,6 +36,26 @@ export class UI {
     private onDebuggerClick(app: HTMLDivElement): void {
 
         app.className = app.className == "debug" ? "" : "debug";
+    }
+
+    /**
+     * 
+     * @param event 
+     */
+    private onDocumentKeyDown(event: KeyboardEvent, ui: UI): void {
+
+      const key = ui.keymap[event.key] - 1;
+      ui.setKeyState(key, true);
+    }
+
+    /**
+     * 
+     * @param event 
+     */
+    private onDocumentKeyUp(event: KeyboardEvent, ui: UI): void {
+
+      const key = ui.keymap[event.key] - 1;
+      ui.setKeyState(key, false);
     }
 
     /**
@@ -60,11 +93,11 @@ export class UI {
             button.setAttribute('key', (key-1).toString());
         
             button.addEventListener('mousedown', () => {
-              button.className = "active";
+              this.setKeyState(key - 1, true);
             });
         
             button.addEventListener('mouseup', () => {
-              button.className = "";
+              this.setKeyState(key - 1, false);
             });
         
             td.appendChild(button);
@@ -77,4 +110,21 @@ export class UI {
             tr!.appendChild(td);
           }
     }
+
+    /**
+     * Change buttons state and emit event to App
+     * @param key 
+     * @param state 
+     */
+    private setKeyState(key: number, state: boolean): void {
+
+      const button = document.querySelector(`button[key="${key}"]`);
+
+      if(!button) return;
+    
+      button.className = state ? 'active' : '';
+
+      if(this.onKeyStateChange) this.onKeyStateChange(key, state);
+    }
+    
 }
