@@ -1,17 +1,21 @@
 export class UI {
 
     app = document.querySelector<HTMLDivElement>('#app')!;
-    resetButton = document.querySelector("#resetButton")!;
-    debuggerButton = document.querySelector("#debuggerButton")!;
-    powerLed = document.querySelector("#power-led")!;
-    tapeLed = document.querySelector("#tape-led")!;
-    runLed = document.querySelector("#run-led")!;
-    canvas = document.querySelector("canvas")!;
+    resetButton = document.querySelector<HTMLButtonElement>("#resetButton")!;
+    debuggerButton = document.querySelector<HTMLButtonElement>("#debuggerButton")!;
+    powerLed = document.querySelector<HTMLDivElement>("#power-led")!;
+    tapeLed = document.querySelector<HTMLDivElement>("#tape-led")!;
+    runLed = document.querySelector<HTMLDivElement>("#run-led")!;
+    canvas = document.querySelector<HTMLCanvasElement>("canvas")!;
+    fileInput = document.querySelector<HTMLInputElement>("#fileInput")!;
+    romSelect = document.querySelector<HTMLSelectElement>("#romSelect")!;
+    romUpload = document.querySelector<HTMLSelectElement>("#romUpload")!;
 
     keymap: {[key: string]: number};
 
     public onKeyStateChange?: (key: number, pressed: boolean) => void;
     public onReset?: () => void;
+    public onRomUploaded?: (filename: string, romData: Uint8Array) => void;
 
     constructor(keymap: {[key: string]: number}) {
 
@@ -26,6 +30,10 @@ export class UI {
       this.resetButton.addEventListener("click", () => this.onResetClick(this));
 
       this.debuggerButton.addEventListener("click", () => this.onDebuggerClick(this.app));
+
+      this.romUpload.addEventListener("click", () => this.onRomUploadClick(this));
+
+      this.fileInput.addEventListener("change", () => this.onFileInputChange(this));
 
       document.addEventListener("keydown", (event: KeyboardEvent) => this.onDocumentKeyDown(event, this));
         
@@ -52,7 +60,7 @@ export class UI {
 
     /**
      * 
-     * @param event 
+     * @param event return response.arrayBuffer();
      */
     private onDocumentKeyDown(event: KeyboardEvent, ui: UI): void {
 
@@ -68,6 +76,41 @@ export class UI {
 
       const key = ui.keymap[event.key] - 1;
       ui.setKeyState(key, false);
+    }
+
+    /**
+     * ROM upload button click event
+     * @param ui 
+     */
+    private onRomUploadClick(ui: UI): void {
+
+      ui.fileInput.click();
+    }
+
+    /**
+     * ROM file selected
+     * @param ui 
+     * @returns 
+     */
+    private onFileInputChange(ui: UI): void {
+
+      if(!ui.fileInput.files || this.fileInput.files?.length == 0)
+        return;
+      
+      const file = this.fileInput.files![0];
+
+      var reader = new FileReader();
+  
+      reader.onload = function(e: ProgressEvent<FileReader>) {
+
+        const buffer = new Uint8Array(<ArrayBuffer>e.target!.result);
+
+        if(ui.onRomUploaded) ui.onRomUploaded(file.name, buffer);
+      };
+    
+      reader.onerror = (e) => console.log('Error : ' + e.type);
+
+      reader.readAsArrayBuffer(file);
     }
 
     /**

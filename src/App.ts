@@ -21,9 +21,11 @@ export class App {
 
         this.ui.onKeyStateChange = (key: number, pressed: boolean) => this.onKeyStateChange(key, pressed);
 
-        this.ui.onReset = () => this.onReset();
+        this.ui.onReset = () => this.onReset(this);
 
-        this.chip8.onRedraw = this.onScreenRedraw;
+        this.ui.onRomUploaded = (filename: string, romData: Uint8Array) => this.onRomUploaded(filename, romData);
+
+        this.chip8.onRedraw = () => this.onScreenRedraw();
 
         this.renderer.initialize(this.chip8.SCREEN_WIDTH, this.chip8.SCREEN_HEIGHT, this.PIXEL_SIZE);
     }
@@ -41,10 +43,11 @@ export class App {
     /**
      * Reset CPU
      */
-    public onReset(): void {
+    public onReset(app: App): void {
 
-        this.chip8.stop();
-        this.chip8.initialize();
+        app.chip8.stop();
+        app.chip8.initialize();
+        app.renderer.clear();
     }
 
     /**
@@ -53,5 +56,18 @@ export class App {
     private onScreenRedraw(): void {
 
         this.renderer.draw(this.chip8.screen);
+    }
+
+    /**
+     * UI event for ROM uploaded event
+     * @param filename 
+     * @param romData 
+     */
+    private onRomUploaded(filename: string, romData: Uint8Array): void {
+
+        this.chip8.stop();
+        this.chip8.initialize();
+        this.chip8.loadROM(romData);
+        this.chip8.run();
     }
 }

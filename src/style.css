@@ -194,6 +194,10 @@ div.led {
   color: antiquewhite;
 }
 
+#fileInput {
+  display: none;
+}
+
 #resetButton, #debuggerButton {
   height: 32px;
 }
