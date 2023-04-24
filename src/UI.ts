@@ -194,4 +194,31 @@ export class UI {
       this.romTitle.innerText = title;
       this.romDescription.innerText = description;
     }
+
+    /**
+     * Set power led state
+     * @param on 
+     */
+    public setPowerLed(on: boolean): void {
+
+      this.powerLed.className = `led ${on ? 'active' : ''}`;
+    }
+
+    /**
+     * Set tape led state
+     * @param on 
+     */
+    public setTapeLed(on: boolean): void {
+
+      this.tapeLed.className = `led ${on ? 'active' : ''}`;
+    }
+
+    /**
+     * Set run led state
+     * @param on 
+     */
+    public setRunLed(on: boolean): void {
+
+      this.runLed.className = `led ${on ? 'active' : ''}`;
+    }
 }

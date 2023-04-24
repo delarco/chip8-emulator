@@ -30,6 +30,8 @@ export class App {
         this.chip8.onRedraw = () => this.onScreenRedraw();
 
         this.renderer.initialize(this.chip8.SCREEN_WIDTH, this.chip8.SCREEN_HEIGHT, this.PIXEL_SIZE);
+
+        this.ui.setPowerLed(true);
     }
 
     /**
@@ -51,10 +53,16 @@ export class App {
         app.chip8.initialize();
         app.renderer.clear();
 
+        app.ui.setTapeLed(false);
+        app.ui.setRunLed(false);
+
         if(app.lastRomData) {
 
             app.chip8.loadROM(app.lastRomData);
             app.chip8.run();
+
+            app.ui.setTapeLed(true);
+            app.ui.setRunLed(true);
         }
     }
 
@@ -81,5 +89,8 @@ export class App {
         this.chip8.initialize();
         this.chip8.loadROM(romData);
         this.chip8.run();
+
+        this.ui.setTapeLed(true);
+        this.ui.setRunLed(true);
     }
 }
