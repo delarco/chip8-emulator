@@ -21,7 +21,7 @@ describe('Chip8IS', () => {
 
         expect(chip8.redraw).eq(false);
 
-        (chip8 as any).cycle();
+        (chip8 as any).step();
 
         expect(chip8.redraw).eq(true);
 
@@ -172,11 +172,114 @@ describe('Chip8IS', () => {
         expect(chip8.V[0xA]).eq(0x01 ^ 0x02);
     })
 
-    it.todo('Code 0x8XY4: Should Adds VY to VX. VF is set to 1 when there\'s a carry, and to 0 when there is not.')
-    it.todo('Code 0x8XY5: Should VY is subtracted from VX. VF is set to 0 when there\'s a borrow, and 1 when there is not.')
-    it.todo('Code 0x8XY6: Should Stores the least significant bit of VX in VF and then shifts VX to the right by 1')
-    it.todo('Code 0x8XY7: Should Sets VX to VY minus VX. VF is set to 0 when there\'s a borrow, and 1 when there is not.')
-    it.todo('Code 0x8XYE: Should Stores the most significant bit of VX in VF and then shifts VX to the left by 1.')
+    it('Code 0x8XY4: Should add VY to VX. VF is set to 1 when there\'s a carry, and to 0 when there is not.', () => {
+
+        const data = new Uint8Array([0x8A, 0xB4, 0x8A, 0xB4]);
+        chip8.loadROM(data);
+
+        chip8.V[0xA] = 0x01;
+        chip8.V[0xB] = 0x02;
+        (chip8 as any).step();
+    
+        expect(chip8.V[0xF]).eq(0);
+        expect(chip8.V[0xA]).eq(0x03);
+
+        chip8.V[0xA] = 0xF1;
+        chip8.V[0xB] = 0xF2;
+        (chip8 as any).step();
+    
+        expect(chip8.V[0xF]).eq(1);
+        expect(chip8.V[0xA]).eq(0xE3);
+    })
+
+    it('Code 0x8XY5: Should subtract VY from VX. VF is set to 0 when there\'s a borrow, and 1 when there is not.', () => {
+
+        const data = new Uint8Array([0x8A, 0xB5, 0x8A, 0xB5]);
+        chip8.loadROM(data);
+
+        chip8.V[0xA] = 0x02;
+        chip8.V[0xB] = 0x01;
+        (chip8 as any).step();
+    
+        expect(chip8.V[0xF]).eq(1);
+        expect(chip8.V[0xA]).eq(0x01);
+
+        chip8.V[0xA] = 0x02;
+        chip8.V[0xB] = 0x03;
+        (chip8 as any).step();
+    
+        expect(chip8.V[0xF]).eq(0);
+        expect(chip8.V[0xA]).eq(0xFF);
+    })
+
+    it('Code 0x8XY6: Should store the least significant bit of VX in VF and then shifts VX to the right by 1', () => {
+
+        const data = new Uint8Array([0x8A, 0xB6, 0x8A, 0xB6]);
+        chip8.loadROM(data);
+
+        chip8.V[0xA] = 0xFF;
+        chip8.V[0xB] = 0xFA;
+        (chip8 as any).step();
+    
+        expect(chip8.V[0xF]).eq(0);
+        expect(chip8.V[0xA]).eq(0xFA >> 1);
+
+        // test shift quirk
+        chip8.quirks.shift = true;
+        chip8.V[0xA] = 0xFF;
+        chip8.V[0xB] = 0xFA;
+        (chip8 as any).step();
+    
+        expect(chip8.V[0xF]).eq(1);
+        expect(chip8.V[0xA]).eq(0xFF >> 1);
+    })
+
+    it('Code 0x8XY7: Should set VX to VY minus VX. VF is set to 0 when there\'s a borrow, and 1 when there is not.', () => {
+
+        const data = new Uint8Array([0x8A, 0xB7, 0x8A, 0xB7]);
+        chip8.loadROM(data);
+
+        const x = 0xA, y = 0xB;
+
+        chip8.V[x] = 0x01;
+        chip8.V[y] = 0x02;
+        (chip8 as any).step();
+    
+        expect(chip8.V[x]).eq(0x01);
+        expect(chip8.V[0xF]).eq(0x01);
+
+        chip8.V[x] = 0x03;
+        chip8.V[y] = 0x02;
+        (chip8 as any).step();
+    
+        expect(chip8.V[x]).eq(0xFF);
+        expect(chip8.V[0xF]).eq(0x00);
+    })
+
+    it('Code 0x8XYE: Should store the most significant bit of VX in VF and then shifts VX to the left by 1.', () => {
+
+        const data = new Uint8Array([0x8A, 0xBE, 0x8A, 0xBE]);
+        chip8.loadROM(data);
+
+        const x = 0xA, y = 0xB;
+
+        chip8.V[x] = 0xFF;
+        chip8.V[y] = 0xFA;
+        (chip8 as any).step();
+    
+        expect(chip8.V[0xF]).eq(1);
+        expect(chip8.V[x]).eq(0xF4);
+
+        // test shift quirk
+        chip8.quirks.shift = true;
+        chip8.V[x] = 0xFF;
+        chip8.V[y] = 0xFA;
+        (chip8 as any).step();
+    
+        expect(chip8.V[0xF]).eq(1);
+        expect(chip8.V[x]).eq(0xFE);
+
+    })
     
     it('Code 0x9XY0: Should skip the next instruction if VX does not equal VY.', () => {
 
@@ -211,7 +314,21 @@ describe('Chip8IS', () => {
         expect(chip8.pc).eq(0xABC + 0x0001);
     })
     
-    it.todo('Code 0xCXNN: Should Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.')
+    it('Code 0xCXNN: Should set VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.', () => {
+
+        const x = 0xA;
+
+        const data = new Uint8Array([0xCA, 0x12]);
+        chip8.loadROM(data);
+        
+        expect(chip8.V[x]).eq(0);
+
+        (chip8 as any).step();
+
+        expect(chip8.V[x]).below(0xFF);
+
+        expect(chip8.V[x]).above(-1);
+    })
 
     it('Code 0xDXYN: Should redraw',  () => {
 
@@ -223,6 +340,19 @@ describe('Chip8IS', () => {
         (chip8 as any).step();
 
         expect(chip8.redraw).eq(true);
+    })
+
+    it('Code 0xDXYN: Should set VF to 1 when collision',  () => {
+
+        const data = new Uint8Array([0xD0, 0x0F, 0xD0, 0x0F]);
+        chip8.loadROM(data);
+
+        expect(chip8.redraw).eq(false);
+
+        (chip8 as any).cycle();
+
+        expect(chip8.redraw).eq(true);
+        expect(chip8.V[0xF]).eq(1);
     })
 
     it('Code 0xEX9E: Should skip the next instruction if the key stored in VX is pressed', () => {
@@ -313,9 +443,153 @@ describe('Chip8IS', () => {
         expect(chip8.V[0xF]).eq(0xAB);
     })
 
-    it.todo('Code 0xFX29: Should Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font')
-    it.todo('Code 0xFX33: Should Stores the binary-coded decimal representation of VX, with the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.')
-    it.todo('Code 0xFX55: Should Stores from V0 to VX (including VX) in memory, starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.')
-    it.todo('Code 0xFX65: Should Fills from V0 to VX (including VX) with values from memory, starting at address I. The offset from I is increased by 1 for each value read, but I itself is left unmodified.')
+    it('Code 0xFX29: Should set I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font', () => {
 
+        const x = 0xA;
+
+        const data = new Uint8Array([0xFA, 0x29]);
+        chip8.loadROM(data);
+
+        chip8.V[x] = 0x7;
+        (chip8 as any).cycle()
+
+        expect(chip8.i).eq(0x7 * 5);
+    })
+
+    it('Code 0xFX33: Should store the binary-coded decimal representation of VX, with the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.', () => {
+
+        const x = 0xA;
+
+        const data = new Uint8Array([0xFA, 0x33]);
+        chip8.loadROM(data);
+
+        chip8.i = 0xFF;
+        chip8.V[x] = 0x77;
+        (chip8 as any).cycle()
+
+        expect(chip8.memory[0xFF]).eq(1);
+        expect(chip8.memory[0xFF + 1]).eq(1);
+        expect(chip8.memory[0xFF + 2]).eq(9);
+    })
+
+    it('Code 0xFX55: Should store from V0 to VX (including VX) in memory, starting at address I. The offset from I is increased by 1 for each value written, but I itself is left unmodified.', () => {
+
+        const x = 0xE;
+
+        const data = new Uint8Array([0xFE, 0x55]);
+        chip8.loadROM(data);
+
+        chip8.i = 0xFF;
+        chip8.quirks.loadStore = true;
+
+        let sum = 0;
+
+        for(let index = 0; index <= x; index++) {
+
+            chip8.V[index] = index + 1;
+            sum += chip8.V[index];
+        }
+        
+        (chip8 as any).step();
+
+        expect(chip8.i).eq(0xFF);
+
+        let sumAfterOp = chip8.memory
+            .slice(0xFF, 0xFF + x + 1)
+            .reduce((prev: number, cur: number) => prev + cur);
+
+        expect(sumAfterOp).eq(sum);
+    })
+
+    it('Code 0xFX55: Should store from V0 to VX (including VX) in memory, starting at address I. The offset from I is increased by 1 for each value written, and I is modified.', () => {
+
+        const x = 0xE;
+        const i = 0xABC;
+
+        const data = new Uint8Array([0xFE, 0x55]);
+        chip8.loadROM(data);
+
+        chip8.i = i;
+        chip8.quirks.loadStore = false;
+
+        let sum = 0;
+
+        for(let index = 0; index <= x; index++) {
+
+            chip8.V[index] = index + 1;
+            sum += chip8.V[index];
+        }
+
+        (chip8 as any).step();
+
+        expect(chip8.i).eq(i + x + 1);
+
+        let sumAfterOp = chip8.memory
+            .slice(i, i + x + 1)
+            .reduce((prev: number, cur: number) => prev + cur);
+
+        expect(sumAfterOp).eq(sum);
+    })
+
+    it('Code 0xFX65: Should fill from V0 to VX (including VX) with values from memory, starting at address I. The offset from I is increased by 1 for each value read, but I itself is left unmodified.', () => {
+
+        const x = 0xE;
+        const i = 0xFF;
+
+        const data = new Uint8Array([0xFE, 0x65]);
+        chip8.loadROM(data);
+
+        chip8.i = i;
+        chip8.quirks.loadStore = true;
+
+        let sum = 0;
+
+        for(let index = 0; index <= x; index++) {
+
+            chip8.memory[index + i] = index + 1;
+            sum += chip8.memory[index + i];
+        }
+
+        (chip8 as any).step();
+
+        expect(chip8.i).eq(i);
+
+        let sumAfterOp = chip8.V
+            .slice(0x0, x + 1)
+            .reduce((prev: number, cur: number) => prev + cur);
+
+        expect(sumAfterOp).eq(sum);
+
+    })
+
+    it('Code 0xFX65: Should fill from V0 to VX (including VX) with values from memory, starting at address I. The offset from I is increased by 1 for each value read, and I is modified.', () => {
+
+        const x = 0xE;
+        const i = 0xFF;
+
+        const data = new Uint8Array([0xFE, 0x65]);
+        chip8.loadROM(data);
+
+        chip8.i = i;
+        chip8.quirks.loadStore = false;
+
+        let sum = 0;
+
+        for(let index = 0; index <= x; index++) {
+
+            chip8.memory[index + i] = index + 1;
+            sum += chip8.memory[index + i];
+        }
+
+        (chip8 as any).step();
+
+        expect(chip8.i).eq(i + x + 1);
+
+        let sumAfterOp = chip8.V
+            .slice(0x0, x + 1)
+            .reduce((prev: number, cur: number) => prev + cur);
+
+        expect(sumAfterOp).eq(sum);
+
+    })
 })

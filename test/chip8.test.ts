@@ -180,4 +180,103 @@ describe('Chip8', () => {
 
         expect(y).eq(0x0BCD);
     })
+
+    it('Should set redraw to false when there is an event listening',  () => {
+
+        const data = new Uint8Array([0xD0, 0x00]);
+        chip8.loadROM(data);
+
+        let redrawCalled = false;
+
+        chip8.onRedraw = () => {
+            redrawCalled = true;
+        };
+
+        expect(chip8.redraw).eq(false);
+
+        (chip8 as any).step();
+
+        expect(chip8.redraw).eq(false);
+
+        expect(redrawCalled).eq(true);
+    })
+
+    it('Should throw unknonw opcode 0x800F', () => {
+
+        const data = new Uint8Array([0x80, 0x0F]);
+        chip8.loadROM(data);
+
+        try {
+            (chip8 as any).cycle();
+        }
+        catch(e) {
+            expect(e).eq('Unknown opcode: 0x800f');
+        }
+    })
+
+    it('Should throw unknonw opcode 0xE000', () => {
+
+        const data = new Uint8Array([0xE0, 0x00]);
+        chip8.loadROM(data);
+
+        try {
+            (chip8 as any).cycle();
+        }
+        catch(e) {
+            expect(e).eq('Unknown opcode: 0xe000');
+        }
+    })
+
+    it('Should throw unknonw opcode 0xF0F0', () => {
+
+        const data = new Uint8Array([0xF0, 0xF0]);
+        chip8.loadROM(data);
+
+        try {
+            (chip8 as any).cycle();
+        }
+        catch(e) {
+            expect(e).eq('Unknown opcode: 0xf0f0');
+        }
+    })
+
+    it('Should call play sound event when soundTimer above 0', () => {
+
+        const data = new Uint8Array([0xF0, 0x0A]);
+        chip8.loadROM(data);
+
+        let playSoundCalled = false;
+        chip8.onPlaySound = () => playSoundCalled = true;
+
+        chip8.soundTimer = 2;
+        (chip8 as any).cycle();
+
+        expect(playSoundCalled).eq(true);
+    })
+
+    it('Should call stop sound event when soundTimer above 0', () => {
+
+        const data = new Uint8Array([0xF0, 0x0A]);
+        chip8.loadROM(data);
+
+        let stopSoundCalled = false;
+        chip8.onStopSound = () => stopSoundCalled = true;
+
+        chip8.soundTimer = 1;
+        (chip8 as any).cycle();
+
+        expect(stopSoundCalled).eq(true);
+    })
+
+    it('Should set timeoutHandle when running', () => {
+
+        const data = new Uint8Array([0xF0, 0x0A]);
+        chip8.loadROM(data);
+        
+        expect(chip8.timeoutHandle).eq(undefined);
+
+        (chip8 as any).run();
+
+        expect(chip8.timeoutHandle).not.eq(undefined);
+    })
 })
