@@ -8,6 +8,8 @@ You can test it here https://delarco.com.br/games/chip8-emulator.
 ## Roadmap
 
 - [ ] Tests
+  - [X] CHIP-8 CPU
+  - [X] CHIP-8 IS
   - [ ] User Interface
   - [ ] Renderer
   - [ ] Audio
