@@ -4,7 +4,8 @@
         "author": "David Winter",
         "year": null,
         "description": "Space Invaders, by: David Winter\n\nThe well known game. Destroy the invaders with your ship.\nShoot with 5, move with 4 and 6. Press 5 to begin a game.",
-        "filename": "Space Invaders [David Winter].ch8"
+        "filename": "Space Invaders [David Winter].ch8",
+        "quirks": { "shift": true }
     },
     {
         "title": "Pong (1 player)",

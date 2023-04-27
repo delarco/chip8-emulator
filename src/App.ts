@@ -117,7 +117,8 @@ export class App {
             year: null,
             description: 'Uploaded ROM',
             filename: filename,
-            data: romData
+            data: romData,
+            quirks: { loadStore: false, shift: false },
         };
 
         this.startRom(rom);
@@ -156,7 +157,7 @@ export class App {
             this.startRom(rom);
             
         })
-        .catch(() => alert('Error loading ROM file.'));
+        //.catch(() => alert('Error loading ROM file.'));
     }
 
     /**
@@ -170,6 +171,20 @@ export class App {
         this.chip8.stop();
         this.chip8.initialize();
         this.chip8.loadROM(rom.data);
+
+        if(rom.quirks) {
+            
+            if(rom.quirks.loadStore) {
+
+                this.chip8.quirks.loadStore = true;
+            }
+
+            if(rom.quirks.shift) {
+
+                this.chip8.quirks.shift = true;
+            }
+        }
+
         this.chip8.run();
 
         this.ui.setTapeLed(true);

@@ -6,4 +6,5 @@ export interface ROM {
     description: string;
     filename: string;
     data: Uint8Array;
+    quirks: { loadStore: boolean, shift: boolean };
 }
