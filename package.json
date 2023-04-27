@@ -14,10 +14,12 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest --reporter verbose",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "doc": "npx typedoc --out dist/docs --entryPointStrategy expand ./src"
   },
   "devDependencies": {
     "@vitest/coverage-c8": "^0.30.1",
+    "typedoc": "^0.24.6",
     "typescript": "^5.0.2",
     "vite": "^4.3.0",
     "vitest": "^0.30.1"
