@@ -145,7 +145,6 @@ export class Chip8IS {
         this.cpu.pc = (this.cpu.pc + 2) & 0x0FFF;
     }
 
-
     /**
      * Code 8XY7
      * Sets VX to VY minus VX. VF is set to 0 when there's a 
@@ -159,16 +158,6 @@ export class Chip8IS {
         this.cpu.V[x] = this.cpu.V[y] - this.cpu.V[x];
         this.cpu.pc = (this.cpu.pc + 2) & 0x0FFF;
     }
-
-    /**
-     * <pre><code>8xy6 - SHR Vx, Vy</code></pre>
-     * Set Vx = Vy SHR 1.
-     * If shift quirks enabled Vx = Vx SHR 1.
-     * If the least-significant bit of shifted value is 1, then VF is set to 1, otherwise 0.
-     * @param {number} x
-     * @param {number} y
-     * @returns {Function}
-     */
 
     /**
      * Code 8XY6
@@ -213,11 +202,9 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>9xy0 - SNE Vx, Vy</code></pre>
-     * Skip next instruction if Vx != Vy.
-     * @param {number} x
-     * @param {number} y
-     * @returns {Function}
+     * Code 9XY0
+     * @param x 
+     * @param y 
      */
     SNE_Vx_Vy(x: number, y: number): void {
         
@@ -228,11 +215,9 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>4xkk - SNE Vx, kk</code></pre>
-     * Skip next instruction if Vx != kk.
-     * @param {number} x
-     * @param {number} kk
-     * @returns {Function}
+     * Code 4XNN
+     * @param x 
+     * @param nn 
      */
     SNE_Vx_nn(x: number, nn: number): void {
         
@@ -243,11 +228,9 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>3xkk - SE Vx, kk</code></pre>
-     * Skip next instruction if Vx = kk.
-     * @param {number} x
-     * @param {number} kk
-     * @returns {Function}
+     * Code 3XNN
+     * @param x 
+     * @param nn 
      */
     SE_Vx_nn(x: number, nn: number): void {
         
@@ -258,11 +241,9 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>5xy0 - SE Vx, Vy</code></pre>
-     * Skip next instruction if Vx = Vy.
-     * @param {number} x
-     * @param {number} y
-     * @returns {Function}
+     * Code 5XY0
+     * @param x 
+     * @param y 
      */
     SE_Vx_Vy(x: number, y: number): void {
         
@@ -272,16 +253,10 @@ export class Chip8IS {
         this.cpu.pc = (this.cpu.pc + 2) & 0x0FFF;
     }
 
-
-
-
-
     /**
-         * <pre><code>2nnn - CALL nnn</code></pre>
-         * Call subroutine at nnn.
-         * @param {number} nnn
-         * @returns {Function}
-         */
+     * Code 2NNN
+     * @param nnn 
+     */
     CALL_nnn(nnn: number): void {
 
         this.cpu.stack[this.cpu.stackPointer] = this.cpu.pc;
@@ -290,10 +265,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Annn - LD I, nnn</code></pre>
-     * Set I = nnn.
-     * @param {number} nnn
-     * @returns {Function}
+     * Code ANNN
+     * @param nnn 
      */
     LD_I_nnn(nnn: number): void {
         
@@ -302,10 +275,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Bnnn - JP V0, nnn</code></pre>
-     * Jump to location nnn + V0.
-     * @param {number} nnn
-     * @returns {Function}
+     * Code BNNN
+     * @param nnn 
      */
     JP_V0_nnn(nnn: number): void {
         
@@ -313,11 +284,9 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Cxkk - RND Vx, kk</code></pre>
-     * Set Vx = random byte AND kk.
-     * @param {number} x
-     * @param {number} kk
-     * @returns {Function}
+     * Code CXNN
+     * @param x 
+     * @param nn 
      */
     RND_Vx_nn(x: number, nn: number): void {
 
@@ -326,10 +295,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Fx33 - LD B, Vx</code></pre>
-     * Store BCD representation of Vx in memory locations I, I+1, and I+2.
-     * @param {number} x
-     * @returns {Function}
+     * Code FX33
+     * @param x 
      */
     LD_B_Vx(x: number) {
 
@@ -340,10 +307,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Fx07 - LD Vx, DT</code></pre>
-     * Set Vx = delay timer value.
-     * @param {number} x
-     * @returns {Function}
+     * Code FX07
+     * @param x 
      */
     LD_Vx_DT(x: number): void {
 
@@ -352,10 +317,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Fx15 - LD DT, Vx</code></pre>
-     * Set delay timer = Vx.
-     * @param {number} x
-     * @returns {Function}
+     * Code FX15
+     * @param x 
      */
     LD_DT_Vx(x: number): void {
 
@@ -364,10 +327,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Fx18 - LD ST, Vx</code></pre>
-     * Set sound timer = Vx.
-     * @param {number} x
-     * @returns {Function}
+     * Code FX18
+     * @param x 
      */
     LD_ST_Vx(x: number): void {
 
@@ -376,10 +337,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Fx1E - ADD I, Vx</code></pre>
-     * Set I = I + Vx.
-     * @param {number} x
-     * @returns {Function}
+     * Code FX1E
+     * @param x 
      */
     ADD_I_Vx(x: number): void {
 
@@ -388,29 +347,25 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Fx55 - LD [I], Vx</code></pre>
-     * Store registers V0 through Vx in memory starting at location I.
-     * The value of the I register will be incremented by X + 1, if load/store quirks are disabled.
-     * @param {number} x
-     * @returns {Function}
+     * Code FX55
+     * @param x 
      */
     LD_I_Vx(x: number): void {
 
         for (var i = 0 ; i <= x; ++i) {
             this.cpu.memory[this.cpu.i + i] = this.cpu.V[i];
         }
+
         if (!this.cpu.quirks.loadStore) {
             this.cpu.i += x + 1;
         }
+
         this.cpu.pc = (this.cpu.pc + 2) & 0x0FFF;
     }
 
     /**
-     * <pre><code>Fx65 - LD Vx, [I]</code></pre>
-     * Read registers V0 through Vx from memory starting at location I.
-     * The value of the I register will be incremented by X + 1, if load/store quirks are disabled.
-     * @param {number} x
-     * @returns {Function}
+     * Code FX65
+     * @param x 
      */
     LD_Vx_I(x: number): void {
 
@@ -426,10 +381,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Fx0A - LD Vx, K</code></pre>
-     * Wait for a key press, store the value of the key in Vx.
-     * @param {number} x
-     * @returns {Function}
+     * Code FX0A
+     * @param x 
      */
     LD_Vx_K(x: number): void {
         
@@ -443,10 +396,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Ex9E - SKP Vx</code></pre>
-     * Skip next instruction if key with the value of Vx is pressed.
-     * @param {number} x
-     * @returns {Function}
+     * Code EX9E
+     * @param x 
      */
     SKP_Vx(x: number): void {
 
@@ -458,10 +409,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>ExA1 - SKNP Vx</code></pre>
-     * Skip next instruction if key with the value of Vx is not pressed.
-     * @param {number} x
-     * @returns {Function}
+     * Code EXA1
+     * @param x 
      */
     SKNP_Vx(x: number): void {
         
@@ -472,10 +421,8 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Fx29 - LD F, Vx</code></pre>
-     * Set I = location of sprite for digit Vx.
-     * @param {number} x
-     * @returns {Function}
+     * Code FX29
+     * @param x 
      */
     LD_F_Vx(x: number): void {
 
@@ -483,7 +430,12 @@ export class Chip8IS {
         this.cpu.pc = (this.cpu.pc + 2) & 0x0FFF;
     }
 
-
+    /**
+     * Toggle screen pixel
+     * @param x 
+     * @param y 
+     * @returns 
+     */
     togglePixel(x: number, y: number): boolean {
         let idx = x + y * this.cpu.SCREEN_WIDTH;
 
@@ -494,12 +446,10 @@ export class Chip8IS {
     }
 
     /**
-     * <pre><code>Dxyn - DRW Vx, Vy, n</code></pre>
-     * Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
-     * @param {number} x
-     * @param {number} y
-     * @param {number} n
-     * @returns {Function}
+     * Code DXYN
+     * @param x 
+     * @param y 
+     * @param n 
      */
     DRW_Vx_Vy_n(x: number, y: number, n: number) {
         
