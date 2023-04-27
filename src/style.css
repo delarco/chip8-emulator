@@ -190,6 +190,10 @@ div.led.active {
   transition: all .2s;
 }
 
+#options button, #options select {
+  text-align: left;
+}
+
 #options button:hover {
   background-color:brown;
   color: antiquewhite;

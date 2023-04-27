@@ -2,11 +2,14 @@ import { Audio } from "./audio";
 import { Chip8 } from "./chip8/chip8";
 import { keymap } from "./keymap";
 import { Renderer } from "./renderer";
+import { ROM } from "./rom-model";
 import { UI } from "./UI";
 
 export class App {
 
     PIXEL_SIZE = 10;
+    ROM_DIR = 'roms'
+    ROM_LIST = `${this.ROM_DIR}/roms.json`;
 
     ui = new UI(keymap);
     chip8 = new Chip8();
@@ -19,6 +22,8 @@ export class App {
         
         this.ui.bindEvents();
 
+        this.loadRomList(this.ROM_LIST)
+
         this.ui.initializeCanvas(this.chip8.SCREEN_WIDTH, this.chip8.SCREEN_HEIGHT, this.PIXEL_SIZE);
 
         this.ui.initializeKeyboard();
@@ -28,6 +33,8 @@ export class App {
         this.ui.onReset = () => this.onReset(this);
 
         this.ui.onRomUploaded = (filename: string, romData: Uint8Array) => this.onRomUploaded(filename, romData);
+
+        this.ui.onRomSelected = (rom: ROM) => this.onRomSelected(rom);
 
         this.chip8.onRedraw = () => this.onScreenRedraw();
 
@@ -104,13 +111,65 @@ export class App {
      */
     private onRomUploaded(filename: string, romData: Uint8Array): void {
 
-        this.lastRomData = romData;
+        const rom: ROM = {
+            title: filename,
+            author: null,
+            year: null,
+            description: 'Uploaded ROM',
+            filename: filename,
+            data: romData
+        };
 
-        this.ui.setRomInfo(filename, '');
+        this.startRom(rom);
+    }
+
+    /**
+     * Load rom list json file
+     * @param filepath 
+     */
+    public loadRomList(filepath: string): void {
+
+        fetch(filepath)
+        .then(response => response.json())
+        .then((romList: Array<ROM>) => 
+            this.ui.setRomList(
+                romList.sort((a: ROM, b: ROM) => a.title < b.title ? -1: 1)
+            )
+        )
+        .catch(() => alert('Error loading ROM list.'));
+    }
+
+    /**
+     * UI event for ROM uploaded event
+     * @param filename 
+     * @param romData 
+     */
+    private onRomSelected(rom: ROM): void {
+
+        this.ui.setRomInfo(rom.title, rom.description);
+
+        fetch(`${this.ROM_DIR}/${rom.filename}`)
+        .then(result => result.arrayBuffer())
+        .then((buffer: ArrayBuffer) => {
+
+            rom.data = new Uint8Array(buffer);
+            this.startRom(rom);
+            
+        })
+        .catch(() => alert('Error loading ROM file.'));
+    }
+
+    /**
+     * Takes a selected or uploaded ROM and start emulation
+     * @param rom 
+     */
+    private startRom(rom: ROM): void {
+
+        this.lastRomData = rom.data;
 
         this.chip8.stop();
         this.chip8.initialize();
-        this.chip8.loadROM(romData);
+        this.chip8.loadROM(rom.data);
         this.chip8.run();
 
         this.ui.setTapeLed(true);

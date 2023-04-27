@@ -1,3 +1,5 @@
+import { ROM } from "./rom-model";
+
 export class UI {
 
     app = document.querySelector<HTMLDivElement>('#app')!;
@@ -15,10 +17,12 @@ export class UI {
     buzzers = document.querySelector<HTMLUListElement>("#buzzers")!;
 
     keymap: {[key: string]: number};
+    romList: Array<ROM>;
 
     public onKeyStateChange?: (key: number, pressed: boolean) => void;
     public onReset?: () => void;
     public onRomUploaded?: (filename: string, romData: Uint8Array) => void;
+    public onRomSelected?: (rom: ROM) => void;
 
     constructor(keymap: {[key: string]: number}) {
 
@@ -37,6 +41,8 @@ export class UI {
       this.romUpload.addEventListener("click", () => this.onRomUploadClick(this));
 
       this.fileInput.addEventListener("change", () => this.onFileInputChange(this));
+
+      this.romSelect.addEventListener("change", () => this.onSelectRomChange());
 
       document.addEventListener("keydown", (event: KeyboardEvent) => this.onDocumentKeyDown(event, this));
         
@@ -230,5 +236,38 @@ export class UI {
     public setBuzzers(on: boolean): void {
 
       this.buzzers.className = `buzzers ${on ? 'beep' : ''}`;
+    }
+
+    /**
+     * Create options for ROMS
+     * @param romList 
+     */
+    public setRomList(romList: Array<ROM>): void {
+
+      this.romList = romList;
+
+      for(let index in this.romList) {
+
+        const rom = this.romList[index];
+
+        const option = document.createElement("option");
+        option.value = index;
+        option.text = rom.title;
+        
+        this.romSelect.appendChild(option);
+      }
+    }
+
+    /**
+     * On ROM selected
+     */
+    private onSelectRomChange(): void {
+
+      if(this.romSelect.selectedIndex == 0) return;
+
+      const selectedOption = this.romSelect.selectedOptions[0];
+      const rom = this.romList[Number(selectedOption.value)];
+
+      if(this.onRomSelected) this.onRomSelected(rom);
     }
 }
