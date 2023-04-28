@@ -22,5 +22,41 @@
             "ArrowUp": 1,
             "ArrowDown": 4
         }
+    },
+    {
+        "title": "Lunar Lander (Udo Pernisz)",
+        "author": "Udo Pernisz",
+        "year": 1979,
+        "description": "You are descending to the floor of a 250-foot crater.  The right side of the TV display shows amount of fuel, feet from bottom and fall rate per cycle.  Lenght of fall rate cycle changes from about 1/4 second to one second.  The fall rate increases by one foot per second/per cycle.  The computer will update the display only at the end of each cycle.\n\nThe left side of the display shows the Lunar Lander descending from 250 feet.  The Lander will first appear at one of sixteen locations.  It will then slowly drop down the crater.  The crater walls have rock formations protruding from them which must be avoided.  If either rocket motor should touch any part of the crater, the Lander will explode in a cloud of smoke and disintegrate.  (Remember, these are atomic thrusters and react like miniature atomic bombs upon impact).\n\nWhen you reach 32 feet, the display will change, and you will see the crater floor. You must now ladn between the rock formations on the floo and maintain a minimum fall rate.  As you drop your fall rate to zero, you soon discover that the Lander becomes more and more unstable just as any hovering object would.  And now with perfect skill you guide the ship in for a perfect touch down, or?",
+        "filename": "Lunar Lander (Udo Pernisz, 1979).ch8",
+        "keymap": {
+            "ArrowUp": 2,
+            "ArrowLeft": 4,
+            "ArrowRight": 6
+        }
+    },
+    {
+        "title": "Soccer",
+        "author": null,
+        "year": null,
+        "description": "",
+        "filename": "Soccer.ch8",
+        "keymap": {
+            "ArrowUp": 1,
+            "ArrowDown": 4
+        }
+    },
+    {
+        "title": "Space Flight",
+        "author": null,
+        "year": null,
+        "description": "",
+        "filename": "Space Flight.ch8",
+        "keymap": {
+            "ArrowUp": 1,
+            "ArrowDown": 4,
+            "ArrowLeft": 14,
+            "ArrowRight": 15
+        }
     }
 ]
