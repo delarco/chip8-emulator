@@ -17,6 +17,7 @@ export class UI {
     buzzers = document.querySelector<HTMLUListElement>("#buzzers")!;
 
     keymap: {[key: string]: number};
+    customKeymap: {[key: string]: number};
     romList: Array<ROM>;
 
     public onKeyStateChange?: (key: number, pressed: boolean) => void;
@@ -27,6 +28,7 @@ export class UI {
     constructor(keymap: {[key: string]: number}) {
 
       this.keymap = keymap;
+      this.customKeymap = {};
     }
 
     /**
@@ -73,7 +75,7 @@ export class UI {
      */
     private onDocumentKeyDown(event: KeyboardEvent, ui: UI): void {
 
-      const key = ui.keymap[event.key];
+      const key = ui.keymap[event.key] || ui.customKeymap[event.key];
       ui.setKeyState(key, true);
     }
 
@@ -83,7 +85,7 @@ export class UI {
      */
     private onDocumentKeyUp(event: KeyboardEvent, ui: UI): void {
 
-      const key = ui.keymap[event.key];
+      const key = ui.keymap[event.key] || ui.customKeymap[event.key];
       ui.setKeyState(key, false);
     }
 
@@ -117,7 +119,7 @@ export class UI {
         if(ui.onRomUploaded) ui.onRomUploaded(file.name, buffer);
       };
     
-      reader.onerror = (e) => console.log('Error : ' + e.type);
+      reader.onerror = () => alert(`Error loading ROM`);
 
       reader.readAsArrayBuffer(file);
     }
@@ -269,5 +271,14 @@ export class UI {
       const rom = this.romList[Number(selectedOption.value)];
 
       if(this.onRomSelected) this.onRomSelected(rom);
+    }
+
+    /**
+     * Set ROM custom keymap
+     * @param keymap 
+     */
+    public setCustomKeymap(keymap: {[key: string]: number}): void {
+
+      this.customKeymap = keymap || { };
     }
 }

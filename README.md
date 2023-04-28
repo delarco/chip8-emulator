@@ -15,7 +15,7 @@ You can test it here https://delarco.com.br/games/chip8-emulator.
   - [ ] Audio
 - [ ] Debugger
 - [ ] Input
-  - [ ] Support custom mappings
+  - [X] Support custom mappings
   - [ ] Support gamepads
 - [ ] Save/Load state
 - [ ] Screenshot

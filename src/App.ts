@@ -52,8 +52,11 @@ export class App {
      * @param pressed 
      */
     private onKeyStateChange(key: number, pressed: boolean): void {
-
-        this.chip8.keys[key] = pressed ? 1 : 0;
+        
+        if(this.chip8.keys) {
+            
+            this.chip8.keys[key] = pressed ? 1 : 0;
+        }
     }
 
     /**
@@ -119,6 +122,7 @@ export class App {
             filename: filename,
             data: romData,
             quirks: { loadStore: false, shift: false },
+            keymap: { },
         };
 
         this.startRom(rom);
@@ -154,10 +158,11 @@ export class App {
         .then((buffer: ArrayBuffer) => {
 
             rom.data = new Uint8Array(buffer);
+            this.ui.setCustomKeymap(rom.keymap);
             this.startRom(rom);
             
         })
-        //.catch(() => alert('Error loading ROM file.'));
+        .catch(() => alert('Error loading ROM file.'));
     }
 
     /**

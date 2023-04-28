@@ -7,4 +7,5 @@ export interface ROM {
     filename: string;
     data: Uint8Array;
     quirks: { loadStore: boolean, shift: boolean };
+    keymap: { [key: string]: number }
 }
