@@ -151,8 +151,6 @@ export class App {
      */
     private onRomSelected(rom: ROM): void {
 
-        this.ui.setRomInfo(rom.title, rom.description);
-
         fetch(`${this.ROM_DIR}/${rom.filename}`)
         .then(result => result.arrayBuffer())
         .then((buffer: ArrayBuffer) => {
@@ -170,6 +168,8 @@ export class App {
      * @param rom 
      */
     private startRom(rom: ROM): void {
+
+        this.ui.setRomInfo(rom.title, rom.description);
 
         this.lastRomData = rom.data;
 

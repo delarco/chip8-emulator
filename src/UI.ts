@@ -117,6 +117,8 @@ export class UI {
         const buffer = new Uint8Array(<ArrayBuffer>e.target!.result);
 
         if(ui.onRomUploaded) ui.onRomUploaded(file.name, buffer);
+
+        ui.romSelect.selectedIndex = 0;
       };
     
       reader.onerror = () => alert(`Error loading ROM`);
@@ -271,6 +273,8 @@ export class UI {
       const rom = this.romList[Number(selectedOption.value)];
 
       if(this.onRomSelected) this.onRomSelected(rom);
+
+      this.romSelect.blur();
     }
 
     /**
