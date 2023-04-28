@@ -74,8 +74,8 @@ export class UI {
      * @param event return response.arrayBuffer();
      */
     private onDocumentKeyDown(event: KeyboardEvent, ui: UI): void {
-
-      const key = ui.keymap[event.key] || ui.customKeymap[event.key];
+      
+      const key = ui.keymap[event.key] ?? ui.customKeymap[event.key];      
       ui.setKeyState(key, true);
     }
 
@@ -85,7 +85,7 @@ export class UI {
      */
     private onDocumentKeyUp(event: KeyboardEvent, ui: UI): void {
 
-      const key = ui.keymap[event.key] || ui.customKeymap[event.key];
+      const key = ui.keymap[event.key] ?? ui.customKeymap[event.key];
       ui.setKeyState(key, false);
     }
 
