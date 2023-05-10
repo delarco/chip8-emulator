@@ -1,5 +1,6 @@
 import { fontSet } from "./font-set";
 import { Chip8IS } from "./chip8-is";
+import { TypedEvent } from "../typed-event";
 
 /**
  * Chip8
@@ -124,6 +125,11 @@ export class Chip8 {
     public onStopSound?: () => void;
 
     /**
+     * Request app to update inputs
+     */
+    public requestInputUpdate = new TypedEvent<void>();
+
+    /**
      * CHIP-8 CPU
      */
     constructor() {
@@ -189,6 +195,7 @@ export class Chip8 {
         const tick = () => {
 
             this.timeoutHandle = setTimeout(() => {
+                this.requestInputUpdate.emit();
                 this.requestAnimationFrameHandle = window.requestAnimationFrame(tick);
                 this.cycle();
             }, 1000 / this.FREQUENCY);

@@ -207,7 +207,7 @@ div.led.active {
   height: 32px;
 }
 
-#romSelect, #romUpload {
+#romSelect, #romUpload, #gamepadSelect {
   width: 100%;
   text-align: center;
 }

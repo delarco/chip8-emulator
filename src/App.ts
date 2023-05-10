@@ -25,21 +25,16 @@ export class App {
         this.loadRomList(this.ROM_LIST)
 
         this.ui.initializeCanvas(this.chip8.SCREEN_WIDTH, this.chip8.SCREEN_HEIGHT, this.PIXEL_SIZE);
-
         this.ui.initializeKeyboard();
-
         this.ui.onKeyStateChange = (key: number, pressed: boolean) => this.onKeyStateChange(key, pressed);
-
         this.ui.onReset = () => this.onReset(this);
-
         this.ui.onRomUploaded = (filename: string, romData: Uint8Array) => this.onRomUploaded(filename, romData);
-
         this.ui.onRomSelected = (rom: ROM) => this.onRomSelected(rom);
 
         this.chip8.onRedraw = () => this.onScreenRedraw();
-
         this.chip8.onPlaySound = () => this.onPlaySound();
         this.chip8.onStopSound = () => this.onStopSound();
+        this.chip8.requestInputUpdate.on(() => this.ui.updateInputs());
 
         this.renderer.initialize(this.chip8.SCREEN_WIDTH, this.chip8.SCREEN_HEIGHT, this.PIXEL_SIZE);
 

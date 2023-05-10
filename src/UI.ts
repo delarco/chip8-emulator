@@ -1,3 +1,4 @@
+import { GamepadManager } from "./gamepad-manager";
 import { ROM } from "./rom-model";
 
 export class UI {
@@ -11,6 +12,7 @@ export class UI {
   canvas = document.querySelector<HTMLCanvasElement>("canvas")!;
   fileInput = document.querySelector<HTMLInputElement>("#fileInput")!;
   romSelect = document.querySelector<HTMLSelectElement>("#romSelect")!;
+  gamepadSelect = document.querySelector<HTMLSelectElement>("#gamepadSelect")!;
   romUpload = document.querySelector<HTMLSelectElement>("#romUpload")!;
   romTitle = document.querySelector<HTMLSpanElement>("#rom-title")!;
   romDescription = document.querySelector<HTMLSpanElement>("#rom-description")!;
@@ -19,6 +21,9 @@ export class UI {
   keymap: { [key: string]: number };
   customKeymap: { [key: string]: number };
   romList: Array<ROM>;
+
+  gamepadManager: GamepadManager;
+  gamepadIndex: number | null;
 
   public onKeyStateChange?: (key: number, pressed: boolean) => void;
   public onReset?: () => void;
@@ -29,6 +34,7 @@ export class UI {
 
     this.keymap = keymap;
     this.customKeymap = {};
+    this.gamepadManager = new GamepadManager();
   }
 
   /**
@@ -47,8 +53,12 @@ export class UI {
     this.romSelect.addEventListener("change", () => this.onSelectRomChange());
 
     document.addEventListener("keydown", (event: KeyboardEvent) => this.onDocumentKeyDown(event, this));
-
     document.addEventListener("keyup", (event: KeyboardEvent) => this.onDocumentKeyUp(event, this));
+
+    this.gamepadManager.connected.on(gamepad => this.updateGamepadList(gamepad, true));
+    this.gamepadManager.disconnected.on(gamepad => this.updateGamepadList(gamepad, false));
+
+    this.gamepadSelect.addEventListener("change", () => this.onGamepadSelect());
   }
 
   /**
@@ -303,4 +313,114 @@ export class UI {
 
     this.initializeKeyboard();
   }
+
+  /**
+   * Update the gamepad select element
+   * @param gamepad 
+   * @param connected 
+   */
+  private updateGamepadList(gamepad: globalThis.Gamepad, connected: boolean) {
+
+    const defaultOption: HTMLOptionElement = Array.prototype.slice.call(this.gamepadSelect.options)
+      .find(option => option.value == "default");
+
+    const selectOption: HTMLOptionElement = Array.prototype.slice.call(this.gamepadSelect.options)
+      .find(option => option.value == "select");
+
+    if (connected) {
+
+      this.gamepadSelect.disabled = false;
+      defaultOption.hidden = true;
+      selectOption.hidden = false;
+
+      if (this.gamepadSelect.selectedIndex == 0) this.gamepadSelect.selectedIndex = 1;
+
+      // add gamepad option
+      const gamepadOption = document.createElement('option');
+      gamepadOption.value = gamepad.index.toString();
+      gamepadOption.text = gamepad.id;
+      this.gamepadSelect.appendChild(gamepadOption);
+    }
+    else {
+
+      // remove gamepad option
+      const gamepadOption: HTMLOptionElement = Array.prototype.slice.call(this.gamepadSelect.options)
+        .find(option => option.value == gamepad.index.toString());
+      this.gamepadSelect.removeChild(gamepadOption);
+
+      if (this.gamepadSelect.options.length == 2) {
+
+        this.gamepadSelect.disabled = true;
+        defaultOption.hidden = false;
+        selectOption.hidden = true;
+        this.gamepadSelect.selectedIndex = 0;
+      }
+    }
+  }
+
+  /**
+   * On gamepad selected event.
+   */
+  private onGamepadSelect(): void {
+
+    if (this.gamepadSelect.selectedIndex <= 1) {
+
+      this.gamepadIndex = null;
+      return;
+    }
+
+    this.gamepadIndex = parseInt(this.gamepadSelect.selectedOptions[0].value);
+    
+    setInterval(() =>  this.updateInputs(), 2000);
+    this.updateInputs()
+  }
+
+  /**
+   * Update inputs (gamepad).
+   */
+  public updateInputs(): void {
+    
+    if(this.gamepadIndex == null) return;
+
+    const gamepad = this.gamepadManager.getGamepad(this.gamepadIndex)
+
+    if(!gamepad) return;
+
+    gamepad.buttons.forEach((button: GamepadButton, index: number) => {
+      // TODO: implement buttons
+    });
+
+    let up = false, down = false;
+    let left = false, right = false;
+
+    gamepad.axes.forEach((axis: number, index: number) => {
+
+      const horizontalAxe = index % 2 == 0;
+
+      if(horizontalAxe && !left && !right) {
+
+        left = axis < -0.5;
+        right = axis > 0.5;
+      }
+       
+      if(!horizontalAxe && !up && !down) {
+
+        up = axis < -0.5;
+        down = axis > 0.5;
+      }
+    });
+
+    const keyUp = this.customKeymap['ArrowUp'];
+    if(keyUp) this.setKeyState(keyUp, up);
+
+    const keyDown = this.customKeymap['ArrowDown'];
+    if(keyDown) this.setKeyState(keyDown, down);
+
+    const keyLeft = this.customKeymap['ArrowLeft'];
+    if(keyUp) this.setKeyState(keyLeft, left);
+
+    const keyRight = this.customKeymap['ArrowRight'];
+    if(keyRight) this.setKeyState(keyRight, right);
+  }
+
 }
