@@ -59,6 +59,8 @@ export class UI {
     this.gamepadManager.disconnected.on(gamepad => this.updateGamepadList(gamepad, false));
 
     this.gamepadSelect.addEventListener("change", () => this.onGamepadSelect());
+
+    document.addEventListener('keypress', (event: KeyboardEvent) => this.onDocumentKeyPress(event.code));
   }
 
   /**
@@ -97,6 +99,15 @@ export class UI {
 
     const key = ui.keymap[event.key] ?? ui.customKeymap[event.key];
     ui.setKeyState(key, false);
+  }
+
+  /**
+   * Document keypress event.
+   * @param key 
+   */
+  private onDocumentKeyPress(key: string): void {
+
+    if (key == 'Space') this.takeScreenshot();
   }
 
   /**
@@ -370,8 +381,8 @@ export class UI {
     }
 
     this.gamepadIndex = parseInt(this.gamepadSelect.selectedOptions[0].value);
-    
-    setInterval(() =>  this.updateInputs(), 2000);
+
+    setInterval(() => this.updateInputs(), 2000);
     this.updateInputs()
   }
 
@@ -379,12 +390,12 @@ export class UI {
    * Update inputs (gamepad).
    */
   public updateInputs(): void {
-    
-    if(this.gamepadIndex == null) return;
+
+    if (this.gamepadIndex == null) return;
 
     const gamepad = this.gamepadManager.getGamepad(this.gamepadIndex)
 
-    if(!gamepad) return;
+    if (!gamepad) return;
 
     gamepad.buttons.forEach((button: GamepadButton, index: number) => {
       // TODO: implement buttons
@@ -397,13 +408,13 @@ export class UI {
 
       const horizontalAxe = index % 2 == 0;
 
-      if(horizontalAxe && !left && !right) {
+      if (horizontalAxe && !left && !right) {
 
         left = axis < -0.5;
         right = axis > 0.5;
       }
-       
-      if(!horizontalAxe && !up && !down) {
+
+      if (!horizontalAxe && !up && !down) {
 
         up = axis < -0.5;
         down = axis > 0.5;
@@ -411,16 +422,36 @@ export class UI {
     });
 
     const keyUp = this.customKeymap['ArrowUp'];
-    if(keyUp) this.setKeyState(keyUp, up);
+    if (keyUp) this.setKeyState(keyUp, up);
 
     const keyDown = this.customKeymap['ArrowDown'];
-    if(keyDown) this.setKeyState(keyDown, down);
+    if (keyDown) this.setKeyState(keyDown, down);
 
     const keyLeft = this.customKeymap['ArrowLeft'];
-    if(keyUp) this.setKeyState(keyLeft, left);
+    if (keyUp) this.setKeyState(keyLeft, left);
 
     const keyRight = this.customKeymap['ArrowRight'];
-    if(keyRight) this.setKeyState(keyRight, right);
+    if (keyRight) this.setKeyState(keyRight, right);
   }
 
+  /**
+   * Create canvas image and download.
+   */
+  private takeScreenshot(): void {
+
+    const downloadLink = document.createElement('a');
+    downloadLink.setAttribute('download', 'screenshot.png');
+
+    this.canvas.toBlob((blob: Blob | null) => {
+
+      if (!blob) {
+        alert('Error generating image.');
+        return;
+      }
+
+      let url = URL.createObjectURL(blob);
+      downloadLink.setAttribute('href', url);
+      downloadLink.click();
+    });
+  }
 }

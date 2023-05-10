@@ -21,7 +21,7 @@ You can test it here https://delarco.com.br/games/chip8-emulator.
   - [ ] Custom mappins - multiple keys
   - [ ] Gamepad buttons (we have only axes working)
 - [ ] Save/Load state
-- [ ] Screenshot
+- [X] Screenshot (space key)
 
 
 ## License
