@@ -2,287 +2,305 @@ import { ROM } from "./rom-model";
 
 export class UI {
 
-    app = document.querySelector<HTMLDivElement>('#app')!;
-    resetButton = document.querySelector<HTMLButtonElement>("#resetButton")!;
-    debuggerButton = document.querySelector<HTMLButtonElement>("#debuggerButton")!;
-    powerLed = document.querySelector<HTMLDivElement>("#power-led")!;
-    tapeLed = document.querySelector<HTMLDivElement>("#tape-led")!;
-    runLed = document.querySelector<HTMLDivElement>("#run-led")!;
-    canvas = document.querySelector<HTMLCanvasElement>("canvas")!;
-    fileInput = document.querySelector<HTMLInputElement>("#fileInput")!;
-    romSelect = document.querySelector<HTMLSelectElement>("#romSelect")!;
-    romUpload = document.querySelector<HTMLSelectElement>("#romUpload")!;
-    romTitle = document.querySelector<HTMLSpanElement>("#rom-title")!;
-    romDescription = document.querySelector<HTMLSpanElement>("#rom-description")!;
-    buzzers = document.querySelector<HTMLUListElement>("#buzzers")!;
+  app = document.querySelector<HTMLDivElement>('#app')!;
+  resetButton = document.querySelector<HTMLButtonElement>("#resetButton")!;
+  debuggerButton = document.querySelector<HTMLButtonElement>("#debuggerButton")!;
+  powerLed = document.querySelector<HTMLDivElement>("#power-led")!;
+  tapeLed = document.querySelector<HTMLDivElement>("#tape-led")!;
+  runLed = document.querySelector<HTMLDivElement>("#run-led")!;
+  canvas = document.querySelector<HTMLCanvasElement>("canvas")!;
+  fileInput = document.querySelector<HTMLInputElement>("#fileInput")!;
+  romSelect = document.querySelector<HTMLSelectElement>("#romSelect")!;
+  romUpload = document.querySelector<HTMLSelectElement>("#romUpload")!;
+  romTitle = document.querySelector<HTMLSpanElement>("#rom-title")!;
+  romDescription = document.querySelector<HTMLSpanElement>("#rom-description")!;
+  buzzers = document.querySelector<HTMLUListElement>("#buzzers")!;
 
-    keymap: {[key: string]: number};
-    customKeymap: {[key: string]: number};
-    romList: Array<ROM>;
+  keymap: { [key: string]: number };
+  customKeymap: { [key: string]: number };
+  romList: Array<ROM>;
 
-    public onKeyStateChange?: (key: number, pressed: boolean) => void;
-    public onReset?: () => void;
-    public onRomUploaded?: (filename: string, romData: Uint8Array) => void;
-    public onRomSelected?: (rom: ROM) => void;
+  public onKeyStateChange?: (key: number, pressed: boolean) => void;
+  public onReset?: () => void;
+  public onRomUploaded?: (filename: string, romData: Uint8Array) => void;
+  public onRomSelected?: (rom: ROM) => void;
 
-    constructor(keymap: {[key: string]: number}) {
+  constructor(keymap: { [key: string]: number }) {
 
-      this.keymap = keymap;
-      this.customKeymap = {};
-    }
+    this.keymap = keymap;
+    this.customKeymap = {};
+  }
 
-    /**
-     * Bind events to DOM elements
-     */
-    public bindEvents(): void {
+  /**
+   * Bind events to DOM elements
+   */
+  public bindEvents(): void {
 
-      this.resetButton.addEventListener("click", () => this.onResetClick(this));
+    this.resetButton.addEventListener("click", () => this.onResetClick(this));
 
-      this.debuggerButton.addEventListener("click", () => this.onDebuggerClick(this.app));
+    this.debuggerButton.addEventListener("click", () => this.onDebuggerClick(this.app));
 
-      this.romUpload.addEventListener("click", () => this.onRomUploadClick(this));
+    this.romUpload.addEventListener("click", () => this.onRomUploadClick(this));
 
-      this.fileInput.addEventListener("change", () => this.onFileInputChange(this));
+    this.fileInput.addEventListener("change", () => this.onFileInputChange(this));
 
-      this.romSelect.addEventListener("change", () => this.onSelectRomChange());
+    this.romSelect.addEventListener("change", () => this.onSelectRomChange());
 
-      document.addEventListener("keydown", (event: KeyboardEvent) => this.onDocumentKeyDown(event, this));
-        
-      document.addEventListener("keyup", (event: KeyboardEvent) => this.onDocumentKeyUp(event, this));
-    }
+    document.addEventListener("keydown", (event: KeyboardEvent) => this.onDocumentKeyDown(event, this));
 
-    /**
-     * Reset button click event
-     * @param ui 
-     */
-    public onResetClick(ui: UI): void {
+    document.addEventListener("keyup", (event: KeyboardEvent) => this.onDocumentKeyUp(event, this));
+  }
 
-      if(ui.onReset) ui.onReset();
-    }
+  /**
+   * Reset button click event
+   * @param ui 
+   */
+  public onResetClick(ui: UI): void {
 
-    /**
-     * Debugger button click event
-     * @param app 
-     */
-    private onDebuggerClick(app: HTMLDivElement): void {
+    if (ui.onReset) ui.onReset();
+  }
 
-        app.className = app.className == "debug" ? "" : "debug";
-    }
+  /**
+   * Debugger button click event
+   * @param app 
+   */
+  private onDebuggerClick(app: HTMLDivElement): void {
 
-    /**
-     * 
-     * @param event return response.arrayBuffer();
-     */
-    private onDocumentKeyDown(event: KeyboardEvent, ui: UI): void {
-      
-      const key = ui.keymap[event.key] ?? ui.customKeymap[event.key];      
-      ui.setKeyState(key, true);
-    }
+    app.className = app.className == "debug" ? "" : "debug";
+  }
 
-    /**
-     * 
-     * @param event 
-     */
-    private onDocumentKeyUp(event: KeyboardEvent, ui: UI): void {
+  /**
+   * 
+   * @param event return response.arrayBuffer();
+   */
+  private onDocumentKeyDown(event: KeyboardEvent, ui: UI): void {
 
-      const key = ui.keymap[event.key] ?? ui.customKeymap[event.key];
-      ui.setKeyState(key, false);
-    }
+    const key = ui.keymap[event.key] ?? ui.customKeymap[event.key];
+    ui.setKeyState(key, true);
+  }
 
-    /**
-     * ROM upload button click event
-     * @param ui 
-     */
-    private onRomUploadClick(ui: UI): void {
+  /**
+   * 
+   * @param event 
+   */
+  private onDocumentKeyUp(event: KeyboardEvent, ui: UI): void {
 
-      ui.fileInput.click();
-    }
+    const key = ui.keymap[event.key] ?? ui.customKeymap[event.key];
+    ui.setKeyState(key, false);
+  }
 
-    /**
-     * ROM file selected
-     * @param ui 
-     * @returns 
-     */
-    private onFileInputChange(ui: UI): void {
+  /**
+   * ROM upload button click event
+   * @param ui 
+   */
+  private onRomUploadClick(ui: UI): void {
 
-      if(!ui.fileInput.files || this.fileInput.files?.length == 0)
-        return;
-      
-      const file = this.fileInput.files![0];
+    ui.fileInput.click();
+  }
 
-      var reader = new FileReader();
-  
-      reader.onload = function(e: ProgressEvent<FileReader>) {
+  /**
+   * ROM file selected
+   * @param ui 
+   * @returns 
+   */
+  private onFileInputChange(ui: UI): void {
 
-        const buffer = new Uint8Array(<ArrayBuffer>e.target!.result);
+    if (!ui.fileInput.files || this.fileInput.files?.length == 0)
+      return;
 
-        if(ui.onRomUploaded) ui.onRomUploaded(file.name, buffer);
+    const file = this.fileInput.files![0];
 
-        ui.romSelect.selectedIndex = 0;
-      };
-    
-      reader.onerror = () => alert(`Error loading ROM`);
+    var reader = new FileReader();
 
-      reader.readAsArrayBuffer(file);
-    }
+    reader.onload = function (e: ProgressEvent<FileReader>) {
 
-    /**
-     * Initialize canvas dimensions
-     */
-    public initializeCanvas(displayWidth: number, displayHeight: number, pixelSize: number): void {
+      const buffer = new Uint8Array(<ArrayBuffer>e.target!.result);
 
-        this.canvas.width = displayWidth * pixelSize;
-        this.canvas.height = displayHeight * pixelSize;
-    }
+      if (ui.onRomUploaded) ui.onRomUploaded(file.name, buffer);
 
-    /**
-     * Generate keyboard table and bind click event
-     */
-    public initializeKeyboard(): void {
+      ui.romSelect.selectedIndex = 0;
+    };
 
-        const keyboardLayout = [
-            0x1, 0x2, 0x3, 0xC,
-            0x4, 0x5, 0x6, 0xD,
-            0x7, 0x8, 0x9, 0xE,
-            0xA, 0x0, 0xB, 0xF
-          ];
+    reader.onerror = () => alert(`Error loading ROM`);
 
-        const keyboardTable = document.querySelector<HTMLTableElement>('#keyboard')!;
+    reader.readAsArrayBuffer(file);
+  }
 
-        let tr = null;
+  /**
+   * Initialize canvas dimensions
+   */
+  public initializeCanvas(displayWidth: number, displayHeight: number, pixelSize: number): void {
 
-        for(let index = 0; index < keyboardLayout.length; index++) {
+    this.canvas.width = displayWidth * pixelSize;
+    this.canvas.height = displayHeight * pixelSize;
+  }
 
-            const key = keyboardLayout[index];
-            const td = document.createElement('td');
-            const button = document.createElement('button')!;
-            
-            button.innerText = (key).toString(16).toUpperCase();
-            button.setAttribute('key', key.toString());
-        
-            button.addEventListener('mousedown', () => {
-              this.setKeyState(key, true);
-            });
-        
-            button.addEventListener('mouseup', () => {
-              this.setKeyState(key, false);
-            });
-        
-            td.appendChild(button);
-        
-            if(index % 4 == 0) {
-              tr = document.createElement('tr');
-              keyboardTable.appendChild(tr);
-            }
-        
-            tr!.appendChild(td);
-          }
-    }
+  /**
+   * Generate keyboard table and bind click event
+   */
+  public initializeKeyboard(): void {
 
-    /**
-     * Change buttons state and emit event to App
-     * @param key 
-     * @param state 
-     */
-    private setKeyState(key: number, state: boolean): void {
+    const keyboardLayout = [
+      0x1, 0x2, 0x3, 0xC,
+      0x4, 0x5, 0x6, 0xD,
+      0x7, 0x8, 0x9, 0xE,
+      0xA, 0x0, 0xB, 0xF
+    ];
 
-      const button = document.querySelector(`button[key="${key}"]`);
+    const haveCustomKeymap = Object.keys(this.customKeymap).length > 0;
 
-      if(!button) return;
-    
-      button.className = state ? 'active' : '';
+    const keyboardTable = document.querySelector<HTMLTableElement>('#keyboard')!;
 
-      if(this.onKeyStateChange) this.onKeyStateChange(key, state);
-    }
+    keyboardTable.innerHTML = '';
 
-    /**
-     * Edit rom info
-     * @param title 
-     * @param desription 
-     */
-    public setRomInfo(title: string, description: string): void {
+    let tr = null;
 
-      this.romTitle.innerText = title;
-      this.romDescription.innerText = description;
-    }
+    for (let index = 0; index < keyboardLayout.length; index++) {
 
-    /**
-     * Set power led state
-     * @param on 
-     */
-    public setPowerLed(on: boolean): void {
+      const key = keyboardLayout[index];
+      const mapped = Object.keys(this.customKeymap).find(f => this.customKeymap[f] == key);
+      const td = document.createElement('td');
+      const button = document.createElement('button')!;
 
-      this.powerLed.className = `led ${on ? 'active' : ''}`;
-    }
+      let buttonText = '';
 
-    /**
-     * Set tape led state
-     * @param on 
-     */
-    public setTapeLed(on: boolean): void {
-
-      this.tapeLed.className = `led ${on ? 'active' : ''}`;
-    }
-
-    /**
-     * Set run led state
-     * @param on 
-     */
-    public setRunLed(on: boolean): void {
-
-      this.runLed.className = `led ${on ? 'active' : ''}`;
-    }
-
-    /**
-     * Set buzzers state
-     * @param on 
-     */
-    public setBuzzers(on: boolean): void {
-
-      this.buzzers.className = `buzzers ${on ? 'beep' : ''}`;
-    }
-
-    /**
-     * Create options for ROMS
-     * @param romList 
-     */
-    public setRomList(romList: Array<ROM>): void {
-
-      this.romList = romList;
-
-      for(let index in this.romList) {
-
-        const rom = this.romList[index];
-
-        const option = document.createElement("option");
-        option.value = index;
-        option.text = rom.title;
-        
-        this.romSelect.appendChild(option);
+      switch (mapped) {
+        case 'ArrowUp': buttonText = '↑'; break;
+        case 'ArrowDown': buttonText = '↓'; break;
+        case 'ArrowLeft': buttonText = '←'; break;
+        case 'ArrowRight': buttonText = '→'; break;
+        case 'Enter': buttonText = '↵'; break;
+        default: buttonText = (key).toString(16).toUpperCase();
       }
+
+      button.innerText = buttonText;
+      button.setAttribute('key', key.toString());
+      button.addEventListener('mousedown', () => this.setKeyState(key, true));
+      button.addEventListener('mouseup', () => this.setKeyState(key, false));
+
+      if (haveCustomKeymap) {
+
+        button.className = mapped ? 'mapped' : 'not-mapped';
+      }
+
+
+      td.appendChild(button);
+
+      if (index % 4 == 0) {
+        tr = document.createElement('tr');
+        keyboardTable.appendChild(tr);
+      }
+
+      tr!.appendChild(td);
     }
+  }
 
-    /**
-     * On ROM selected
-     */
-    private onSelectRomChange(): void {
+  /**
+   * Change buttons state and emit event to App
+   * @param key 
+   * @param state 
+   */
+  private setKeyState(key: number, state: boolean): void {
 
-      if(this.romSelect.selectedIndex == 0) return;
+    const button = document.querySelector(`button[key="${key}"]`);
 
-      const selectedOption = this.romSelect.selectedOptions[0];
-      const rom = this.romList[Number(selectedOption.value)];
+    if (!button) return;
 
-      if(this.onRomSelected) this.onRomSelected(rom);
+    button.className = state ? 'active' : '';
 
-      this.romSelect.blur();
+    if (this.onKeyStateChange) this.onKeyStateChange(key, state);
+  }
+
+  /**
+   * Edit rom info
+   * @param title 
+   * @param desription 
+   */
+  public setRomInfo(title: string, description: string): void {
+
+    this.romTitle.innerText = title;
+    this.romDescription.innerText = description;
+  }
+
+  /**
+   * Set power led state
+   * @param on 
+   */
+  public setPowerLed(on: boolean): void {
+
+    this.powerLed.className = `led ${on ? 'active' : ''}`;
+  }
+
+  /**
+   * Set tape led state
+   * @param on 
+   */
+  public setTapeLed(on: boolean): void {
+
+    this.tapeLed.className = `led ${on ? 'active' : ''}`;
+  }
+
+  /**
+   * Set run led state
+   * @param on 
+   */
+  public setRunLed(on: boolean): void {
+
+    this.runLed.className = `led ${on ? 'active' : ''}`;
+  }
+
+  /**
+   * Set buzzers state
+   * @param on 
+   */
+  public setBuzzers(on: boolean): void {
+
+    this.buzzers.className = `buzzers ${on ? 'beep' : ''}`;
+  }
+
+  /**
+   * Create options for ROMS
+   * @param romList 
+   */
+  public setRomList(romList: Array<ROM>): void {
+
+    this.romList = romList;
+
+    for (let index in this.romList) {
+
+      const rom = this.romList[index];
+
+      const option = document.createElement("option");
+      option.value = index;
+      option.text = rom.title;
+
+      this.romSelect.appendChild(option);
     }
+  }
 
-    /**
-     * Set ROM custom keymap
-     * @param keymap 
-     */
-    public setCustomKeymap(keymap: {[key: string]: number}): void {
+  /**
+   * On ROM selected
+   */
+  private onSelectRomChange(): void {
 
-      this.customKeymap = keymap || { };
-    }
+    if (this.romSelect.selectedIndex == 0) return;
+
+    const selectedOption = this.romSelect.selectedOptions[0];
+    const rom = this.romList[Number(selectedOption.value)];
+
+    if (this.onRomSelected) this.onRomSelected(rom);
+
+    this.romSelect.blur();
+  }
+
+  /**
+   * Set ROM custom keymap
+   * @param keymap 
+   */
+  public setCustomKeymap(keymap: { [key: string]: number }): void {
+
+    this.customKeymap = keymap || {};
+
+    this.initializeKeyboard();
+  }
 }

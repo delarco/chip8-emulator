@@ -235,6 +235,14 @@ div.led.active {
   color: antiquewhite;
 }
 
+#keyboard button.mapped {
+  font-weight: bolder;
+}
+
+#keyboard button.not-mapped {
+  color:darkgrey;
+}
+
 #rom-info {
   margin: 0 auto;
   width: 640px;
