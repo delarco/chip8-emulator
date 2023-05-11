@@ -30,6 +30,7 @@ export class App {
         this.ui.onReset = () => this.onReset(this);
         this.ui.onRomUploaded = (filename: string, romData: Uint8Array) => this.onRomUploaded(filename, romData);
         this.ui.onRomSelected = (rom: ROM) => this.onRomSelected(rom);
+        this.ui.onSaveLoadState.on(stateNum => this.onSaveLoadState(stateNum));
 
         this.chip8.onRedraw = () => this.onScreenRedraw();
         this.chip8.onPlaySound = () => this.onPlaySound();
@@ -189,5 +190,15 @@ export class App {
 
         this.ui.setTapeLed(true);
         this.ui.setRunLed(true);
+    }
+
+    /**
+     * Save or load state.
+     * @param stateNum 
+     */
+    private onSaveLoadState(stateNum: number): void {
+
+        // TODO: implement
+        console.log('onSaveLoadState', stateNum);
     }
 }

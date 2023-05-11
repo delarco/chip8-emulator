@@ -1,5 +1,6 @@
 import { GamepadManager } from "./gamepad-manager";
 import { ROM } from "./rom-model";
+import { TypedEvent } from "./typed-event";
 
 export class UI {
 
@@ -17,6 +18,8 @@ export class UI {
   romTitle = document.querySelector<HTMLSpanElement>("#rom-title")!;
   romDescription = document.querySelector<HTMLSpanElement>("#rom-description")!;
   buzzers = document.querySelector<HTMLUListElement>("#buzzers")!;
+  states = document.querySelector<HTMLDivElement>('#states')!;
+  saveStateButton = document.querySelector<HTMLButtonElement>('#save-state-button')!;
 
   keymap: { [key: string]: number };
   customKeymap: { [key: string]: number };
@@ -29,6 +32,7 @@ export class UI {
   public onReset?: () => void;
   public onRomUploaded?: (filename: string, romData: Uint8Array) => void;
   public onRomSelected?: (rom: ROM) => void;
+  public onSaveLoadState = new TypedEvent<number>();
 
   constructor(keymap: { [key: string]: number }) {
 
@@ -61,6 +65,8 @@ export class UI {
     this.gamepadSelect.addEventListener("change", () => this.onGamepadSelect());
 
     document.addEventListener('keypress', (event: KeyboardEvent) => this.onDocumentKeyPress(event.code));
+
+    this.saveStateButton.addEventListener('click', () => this.saveLoadState(null));
   }
 
   /**
@@ -108,6 +114,15 @@ export class UI {
   private onDocumentKeyPress(key: string): void {
 
     if (key == 'Space') this.takeScreenshot();
+
+    if (key.indexOf('Digit') >= 0) {
+
+      const stateNum = parseInt(key.replace('Digit', ''));
+
+      if(!stateNum) return;
+
+      this.saveLoadState(stateNum);
+    }
   }
 
   /**
@@ -453,5 +468,45 @@ export class UI {
       downloadLink.setAttribute('href', url);
       downloadLink.click();
     });
+  }
+
+  /**
+   * Save or load state.
+   * @param stateNum 
+   */
+  private saveLoadState(stateNum: number | null): void {
+
+    if(!stateNum) {
+
+      // check next available slot
+      for(let i = 1; i <= 9; i++) {
+
+        const buttonCheck = document.querySelector<HTMLButtonElement>(`#state-${i}-load`);
+
+        if(!buttonCheck) {
+
+          stateNum = i;
+          break;
+        }
+      }
+    }
+
+    if(!stateNum) return;
+
+    const buttonId = `state-${stateNum}-load`;
+
+    // check if stateNum-load-button exists
+    let button = document.querySelector<HTMLButtonElement>(`#${buttonId}`);
+
+    if(!button) {
+
+      button = document.createElement('button');
+      button.id = buttonId;
+      button.innerText = `LOAD #${stateNum}`;
+      button.addEventListener('click', () => this.saveLoadState(stateNum));
+      this.states.appendChild(button);
+    }
+
+    this.onSaveLoadState.emit(stateNum);
   }
 }
