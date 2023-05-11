@@ -4,6 +4,15 @@ A [CHIP-8](https://en.wikipedia.org/wiki/CHIP-8) emulator written in TypeScript.
 
 You can test it here https://delarco.com.br/games/chip8-emulator.
 
+## Screenshots
+
+![Space Invaders](public/screenshots/space-invaders.png)
+
+![Astro Dodge](public/screenshots/astro-dodge.png)
+
+![IBM](public/screenshots/ibm.png)
+
+![space-flight](public/screenshots/space-flight.png)
 
 ## Roadmap
 
