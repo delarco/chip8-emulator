@@ -1,5 +1,6 @@
 import { Audio } from "./audio";
 import { Chip8 } from "./chip8/chip8";
+import { Chip8CpuState } from "./chip8/chip8-cpu-state";
 import { keymap } from "./keymap";
 import { Renderer } from "./renderer";
 import { ROM } from "./rom-model";
@@ -17,6 +18,8 @@ export class App {
     audio = new Audio();
 
     lastRomData: Uint8Array;
+
+    states: {[key: number]: Chip8CpuState} = {};
 
     constructor() {
         
@@ -198,7 +201,29 @@ export class App {
      */
     private onSaveLoadState(stateNum: number): void {
 
-        // TODO: implement
-        console.log('onSaveLoadState', stateNum);
+        const state = this.states[stateNum];
+
+        if(!state) {
+
+            // save
+            this.states[stateNum] = new Chip8CpuState(this.chip8);
+        }
+        else {
+
+            // load
+            this.chip8.stop();
+
+            this.chip8.memory = new Uint8Array(state.memory);
+            this.chip8.V = new Uint8Array(state.V);
+            this.chip8.i = state.i;
+            this.chip8.pc = state.pc;
+            this.chip8.delayTimer = state.delayTimer;
+            this.chip8.soundTimer = state.soundTimer;
+            this.chip8.redraw = state.redraw;
+            this.chip8.screen = new Uint8Array(state.screen);
+            this.chip8.stack = new Uint16Array(state.stack);
+
+            this.chip8.run();
+        }
     }
 }

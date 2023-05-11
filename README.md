@@ -20,7 +20,7 @@ You can test it here https://delarco.com.br/games/chip8-emulator.
   - [X] Support gamepads
   - [ ] Custom mappins - multiple keys
   - [ ] Gamepad buttons (we have only axes working)
-- [ ] Save/Load state
+- [X] Save/Load state (keys 1 to 9, not on numpad)
 - [X] Screenshot (space key)
 
 
