@@ -412,9 +412,9 @@ export class UI {
 
     if (!gamepad) return;
 
-    gamepad.buttons.forEach((button: GamepadButton, index: number) => {
+    //gamepad.buttons.forEach((button: GamepadButton, index: number) => {
       // TODO: implement buttons
-    });
+    //});
 
     let up = false, down = false;
     let left = false, right = false;
